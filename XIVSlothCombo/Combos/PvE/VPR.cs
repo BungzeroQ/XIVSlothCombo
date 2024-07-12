@@ -456,9 +456,9 @@ namespace XIVSlothCombo.Combos.PvE
                         //    }
                         //}
 
-                        if (OnTargetsRear() && SwiftskinsCoilReady)
+                        if (TargetNeedsPositionals() && OnTargetsRear() && SwiftskinsCoilReady)
                             return SwiftskinsCoil;
-                        else if (OnTargetsRear() && HuntersCoilReady)
+                        else if (TargetNeedsPositionals() && OnTargetsFlank() && HuntersCoilReady)
                             return HuntersCoil;
                         else
                         {
