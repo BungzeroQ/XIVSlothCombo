@@ -414,9 +414,59 @@ namespace XIVSlothCombo.Combos.PvE
                         if (HasEffect(Buffs.SwiftskinsVenom))
                             return OriginalHook(Twinblood);
 
+                        //if (positionalChoice is 0)
+                        //{
+                        //    if (SwiftskinsCoilReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //           trueNorthReady && !OnTargetsFlank())
+                        //            return All.TrueNorth;
+
+                        //        return HuntersCoil;
+                        //    }
+
+                        //    if (DreadwinderReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //            trueNorthReady && !OnTargetsRear())
+                        //            return All.TrueNorth;
+
+                        //        return SwiftskinsCoil;
+                        //    }
+                        //}
+
+                        //if (positionalChoice is 1)
+                        //{
+                        //    if (HuntersCoilReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //           trueNorthReady && !OnTargetsRear())
+                        //            return All.TrueNorth;
+
+                        //        return SwiftskinsCoil;
+                        //    }
+
+                        //    if (DreadwinderReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //           trueNorthReady && !OnTargetsFlank())
+                        //            return All.TrueNorth;
+
+                        //        return HuntersCoil;
+                        //    }
+                        //}
+
+                        if (TargetNeedsPositionals())
+                        {
+                            if (OnTargetsRear() && SwiftskinsCoilReady)
+                                return SwiftskinsCoil;
+
+                            if (OnTargetsFlank() && HuntersCoilReady)
+                                return HuntersCoil;
+                        }
+
                         if (positionalChoice is 0)
                         {
-
                             if (SwiftskinsCoilReady)
                             {
                                 if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&

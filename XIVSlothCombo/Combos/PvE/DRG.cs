@@ -259,6 +259,8 @@ namespace XIVSlothCombo.Combos.PvE
                     ChaosDoTDebuff = FindTargetEffect(Debuffs.ChaoticSpring);
                 else ChaosDoTDebuff = FindTargetEffect(Debuffs.ChaosThrust);
 
+                bool hasEffectDot = ChaosDoTDebuff is not null;
+
                 if (actionID is TrueThrust)
                 {
                     if (IsEnabled(CustomComboPreset.DRG_Variant_Cure) &&
@@ -299,6 +301,8 @@ namespace XIVSlothCombo.Combos.PvE
                             if (IsEnabled(CustomComboPreset.DRG_ST_Litany) &&
                                 AnimationLock.CanDRGWeave(BattleLitany) &&
                                 ActionReady(BattleLitany) &&
+                                HasEffect(Buffs.LanceCharge) &&
+                                hasEffectDot &&
                                 GetTargetHPPercent() >= Config.DRG_ST_LitanyHP)
                                 return BattleLitany;
                         }
@@ -309,6 +313,7 @@ namespace XIVSlothCombo.Combos.PvE
                             if (IsEnabled(CustomComboPreset.DRG_ST_LifeSurge) &&
                                 AnimationLock.CanDRGWeave(LifeSurge) &&
                                 ActionReady(LifeSurge) && !HasEffect(Buffs.LifeSurge) &&
+                                hasEffectDot &&
                                 ((WasLastWeaponskill(WheelingThrust) && LevelChecked(Drakesbane)) ||
                                 (WasLastWeaponskill(FangAndClaw) && LevelChecked(Drakesbane)) ||
                                 (WasLastWeaponskill(OriginalHook(VorpalThrust)) && LevelChecked(OriginalHook(FullThrust)))))
@@ -323,12 +328,14 @@ namespace XIVSlothCombo.Combos.PvE
                             //Geirskogul Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Geirskogul) &&
                                 AnimationLock.CanDRGWeave(Geirskogul) &&
+                                hasEffectDot &&
                                 ActionReady(Geirskogul))
                                 return Geirskogul;
 
                             //(High) Jump Feature   
                             if (IsEnabled(CustomComboPreset.DRG_ST_HighJump) &&
                                 AnimationLock.CanDRGWeave(OriginalHook(Jump)) &&
+                                hasEffectDot &&
                                 ActionReady(OriginalHook(Jump)) &&
                                 (!IsEnabled(CustomComboPreset.DRG_ST_HighJump_Movement) ||
                                 (IsEnabled(CustomComboPreset.DRG_ST_HighJump_Movement) && !IsMoving)))
@@ -337,7 +344,9 @@ namespace XIVSlothCombo.Combos.PvE
                             //Dragonfire Dive Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_DragonfireDive) &&
                                 AnimationLock.CanDRGWeave(DragonfireDive) &&
+                                hasEffectDot &&
                                 ActionReady(DragonfireDive) &&
+                                HasEffect(Buffs.LanceCharge) &&
                                 (!IsEnabled(CustomComboPreset.DRG_ST_DragonfireDive_Movement) ||
                                 (IsEnabled(CustomComboPreset.DRG_ST_DragonfireDive_Movement) && !IsMoving)))
                                 return DragonfireDive;
@@ -345,7 +354,9 @@ namespace XIVSlothCombo.Combos.PvE
                             //StarDiver Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Stardiver) &&
                                 AnimationLock.CanDRGWeave(Stardiver) &&
+                                hasEffectDot &&
                                 ActionReady(Stardiver) && gauge.IsLOTDActive &&
+                                HasEffect(Buffs.LanceCharge) &&
                                 (!IsEnabled(CustomComboPreset.DRG_ST_Stardiver_Movement) ||
                                 (IsEnabled(CustomComboPreset.DRG_ST_Stardiver_Movement) && !IsMoving)))
                                 return Stardiver;
@@ -353,25 +364,32 @@ namespace XIVSlothCombo.Combos.PvE
                             //Starcross Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Starcross) &&
                                 AnimationLock.CanDRGWeave(Starcross) &&
+                                hasEffectDot &&
+                                HasEffect(Buffs.LanceCharge) &&
                                 HasEffect(Buffs.StarcrossReady))
                                 return OriginalHook(Stardiver);
 
                             //Rise of the Dragon Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Dives_RiseOfTheDragon) &&
                                 AnimationLock.CanDRGWeave(RiseOfTheDragon) &&
+                                hasEffectDot &&
+                                HasEffect(Buffs.LanceCharge) &&
                                 HasEffect(Buffs.DragonsFlight))
                                 return OriginalHook(DragonfireDive);
 
                             //Mirage Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Mirage) &&
                                 AnimationLock.CanDRGWeave(MirageDive) &&
+                                hasEffectDot &&
                                 HasEffect(Buffs.DiveReady))
                                 return OriginalHook(HighJump);
 
                             //Nastrond Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Nastrond) &&
                                 AnimationLock.CanDRGWeave(Nastrond) &&
+                                hasEffectDot &&
                                 HasEffect(Buffs.NastrondReady) &&
+                                HasEffect(Buffs.LanceCharge) &&
                                 gauge.IsLOTDActive)
                                 return OriginalHook(Geirskogul);
                         }
