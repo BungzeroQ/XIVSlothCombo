@@ -414,46 +414,94 @@ namespace XIVSlothCombo.Combos.PvE
                         if (HasEffect(Buffs.SwiftskinsVenom))
                             return OriginalHook(Twinblood);
 
-                        if (positionalChoice is 0)
+                        //if (positionalChoice is 0)
+                        //{
+                        //    if (SwiftskinsCoilReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //           trueNorthReady && !OnTargetsFlank())
+                        //            return All.TrueNorth;
+
+                        //        return HuntersCoil;
+                        //    }
+
+                        //    if (DreadwinderReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //            trueNorthReady && !OnTargetsRear())
+                        //            return All.TrueNorth;
+
+                        //        return SwiftskinsCoil;
+                        //    }
+                        //}
+
+                        //if (positionalChoice is 1)
+                        //{
+                        //    if (HuntersCoilReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //           trueNorthReady && !OnTargetsRear())
+                        //            return All.TrueNorth;
+
+                        //        return SwiftskinsCoil;
+                        //    }
+
+                        //    if (DreadwinderReady)
+                        //    {
+                        //        if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                        //           trueNorthReady && !OnTargetsFlank())
+                        //            return All.TrueNorth;
+
+                        //        return HuntersCoil;
+                        //    }
+                        //}
+
+                        if (TargetNeedsPositionals() && OnTargetsRear() && SwiftskinsCoilReady)
+                            return SwiftskinsCoil;
+                        else if (TargetNeedsPositionals() && OnTargetsFlank() && HuntersCoilReady)
+                            return HuntersCoil;
+                        else
                         {
-
-                            if (SwiftskinsCoilReady)
+                            if (positionalChoice is 0)
                             {
-                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                   trueNorthReady && !OnTargetsFlank())
-                                    return All.TrueNorth;
+                                if (SwiftskinsCoilReady)
+                                {
+                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                       trueNorthReady && !OnTargetsFlank())
+                                        return All.TrueNorth;
 
-                                return HuntersCoil;
+                                    return HuntersCoil;
+                                }
+
+                                if (DreadwinderReady)
+                                {
+                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                        trueNorthReady && !OnTargetsRear())
+                                        return All.TrueNorth;
+
+                                    return SwiftskinsCoil;
+                                }
                             }
 
-                            if (DreadwinderReady)
+                            if (positionalChoice is 1)
                             {
-                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                    trueNorthReady && !OnTargetsRear())
-                                    return All.TrueNorth;
+                                if (HuntersCoilReady)
+                                {
+                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                       trueNorthReady && !OnTargetsRear())
+                                        return All.TrueNorth;
 
-                                return SwiftskinsCoil;
-                            }
-                        }
+                                    return SwiftskinsCoil;
+                                }
 
-                        if (positionalChoice is 1)
-                        {
-                            if (HuntersCoilReady)
-                            {
-                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                   trueNorthReady && !OnTargetsRear())
-                                    return All.TrueNorth;
+                                if (DreadwinderReady)
+                                {
+                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                       trueNorthReady && !OnTargetsFlank())
+                                        return All.TrueNorth;
 
-                                return SwiftskinsCoil;
-                            }
-
-                            if (DreadwinderReady)
-                            {
-                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                   trueNorthReady && !OnTargetsFlank())
-                                    return All.TrueNorth;
-
-                                return HuntersCoil;
+                                    return HuntersCoil;
+                                }
                             }
                         }
                     }
