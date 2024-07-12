@@ -456,52 +456,54 @@ namespace XIVSlothCombo.Combos.PvE
                         //    }
                         //}
 
-                        if (TargetNeedsPositionals() && OnTargetsRear() && SwiftskinsCoilReady)
-                            return SwiftskinsCoil;
-                        else if (TargetNeedsPositionals() && OnTargetsFlank() && HuntersCoilReady)
-                            return HuntersCoil;
-                        else
+                        if (TargetNeedsPositionals())
                         {
-                            if (positionalChoice is 0)
+                            if (OnTargetsRear() && SwiftskinsCoilReady)
+                                return SwiftskinsCoil;
+
+                            if (OnTargetsFlank() && HuntersCoilReady)
+                                return HuntersCoil;
+                        }
+
+                        if (positionalChoice is 0)
+                        {
+                            if (SwiftskinsCoilReady)
                             {
-                                if (SwiftskinsCoilReady)
-                                {
-                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                       trueNorthReady && !OnTargetsFlank())
-                                        return All.TrueNorth;
+                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                   trueNorthReady && !OnTargetsFlank())
+                                    return All.TrueNorth;
 
-                                    return HuntersCoil;
-                                }
-
-                                if (DreadwinderReady)
-                                {
-                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                        trueNorthReady && !OnTargetsRear())
-                                        return All.TrueNorth;
-
-                                    return SwiftskinsCoil;
-                                }
+                                return HuntersCoil;
                             }
 
-                            if (positionalChoice is 1)
+                            if (DreadwinderReady)
                             {
-                                if (HuntersCoilReady)
-                                {
-                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                       trueNorthReady && !OnTargetsRear())
-                                        return All.TrueNorth;
+                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                    trueNorthReady && !OnTargetsRear())
+                                    return All.TrueNorth;
 
-                                    return SwiftskinsCoil;
-                                }
+                                return SwiftskinsCoil;
+                            }
+                        }
 
-                                if (DreadwinderReady)
-                                {
-                                    if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
-                                       trueNorthReady && !OnTargetsFlank())
-                                        return All.TrueNorth;
+                        if (positionalChoice is 1)
+                        {
+                            if (HuntersCoilReady)
+                            {
+                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                   trueNorthReady && !OnTargetsRear())
+                                    return All.TrueNorth;
 
-                                    return HuntersCoil;
-                                }
+                                return SwiftskinsCoil;
+                            }
+
+                            if (DreadwinderReady)
+                            {
+                                if (IsEnabled(CustomComboPreset.VPR_TrueNorthDynamic) &&
+                                   trueNorthReady && !OnTargetsFlank())
+                                    return All.TrueNorth;
+
+                                return HuntersCoil;
                             }
                         }
                     }
