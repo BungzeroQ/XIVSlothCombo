@@ -326,12 +326,13 @@ namespace XIVSlothCombo.Combos.PvE
                         LevelChecked(Hypercharge) && !gauge.IsOverheated && !WasLastAction(BarrelStabilizer))
                     {
                         //Protection & ensures Hyper charged is double weaved with WF during reopener
-                        if (WasLastAction(FullMetalField) ||
-                            (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
-                            !LevelChecked(Wildfire))
+                        //if (WasLastAction(FullMetalField) ||
+                        //    (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
+                        //    !LevelChecked(Wildfire))
+                        if (HasEffect(Buffs.Hypercharged) && (GetCooldownRemainingTime(Wildfire) <= 1.5  || GetBuffRemainingTime(Buffs.Hypercharged) >= 1.25 || !LevelChecked(Wildfire)))
                             return Hypercharge;
 
-                        if (drillCD && anchorCD && sawCD &&
+                        if (!HasEffect(Buffs.Hypercharged) && drillCD && anchorCD && sawCD &&
                             ((GetCooldownRemainingTime(Wildfire) > GCD * 5 && LevelChecked(Wildfire)) || !LevelChecked(Wildfire)))
                             return Hypercharge;
                     }
