@@ -329,7 +329,7 @@ namespace XIVSlothCombo.Combos.PvE
                         //if (WasLastAction(FullMetalField) ||
                         //    (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
                         //    !LevelChecked(Wildfire))
-                        if (HasEffect(Buffs.Hypercharged) && (GetCooldownRemainingTime(Wildfire) <= 1.5  || GetBuffRemainingTime(Buffs.Hypercharged) >= 1.25 || !LevelChecked(Wildfire)))
+                        if (HasEffect(Buffs.Hypercharged) && (GetCooldownRemainingTime(Wildfire) <= 2  || GetBuffRemainingTime(Buffs.Hypercharged) <= 1.25 || !LevelChecked(Wildfire)))
                             return Hypercharge;
 
                         if (!HasEffect(Buffs.Hypercharged) && drillCD && anchorCD && sawCD &&
