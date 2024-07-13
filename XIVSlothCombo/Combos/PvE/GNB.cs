@@ -1,3 +1,4 @@
+using System;
 using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Statuses;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -80,32 +81,41 @@ namespace XIVSlothCombo.Combos.PvE
                 if (actionID is KeenEdge)
                 {
                     var gauge = GetJobGauge<GNBGauge>();
-                    var delayNoMercy = GetCooldownRemainingTime(actionID) < 1 && GetCooldownRemainingTime(actionID) > 0.49;
+                    var quarterWeave = GetCooldownRemainingTime(actionID) < 1 && GetCooldownRemainingTime(actionID) > 0.6;
+                    float GCD = GetCooldown(KeenEdge).CooldownTotal; // GCD is 2.5sks only
 
+                    // Variant Cure
                     if (IsEnabled(CustomComboPreset.GNB_Variant_Cure) && IsEnabled(Variant.VariantCure) && PlayerHealthPercentageHp() <= GetOptionValue(Config.GNB_VariantCure))
                         return Variant.VariantCure;
 
+                    // Ranged option
                     if (IsEnabled(CustomComboPreset.GNB_ST_RangedUptime) && !InMeleeRange() && LevelChecked(LightningShot) && HasBattleTarget())
                         return LightningShot;
 
-                    if (IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_NoMercy) && ActionReady(NoMercy))
+                    // No Mercy
+                    if (IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_NoMercy))
                     {
-                        if (LevelChecked(BurstStrike))
+                        if (ActionReady(NoMercy))
                         {
-                            if (delayNoMercy)
+                            if (CanWeave(actionID))
                             {
-                                if ((CombatEngageDuration().TotalSeconds < 30 && lastComboMove is SolidBarrel) ||
-                                    gauge.Ammo >= 2 && IsOffCooldown(NoMercy) ||
-                                    (CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo is 2 && WasLastWeaponskill(BurstStrike)))
+                                int minutes = CombatEngageDuration().Minutes;
+
+                                if ((CombatEngageDuration().TotalSeconds < 30 && lastComboMove is BrutalShell) // Opener
+                                    || (LevelChecked(ReignOfBeasts) && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv100 on CD use
+                                    || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && minutes % 2 == 1 && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv90 1min On CD use
+                                    || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo == 3) // Lv90 2min 3cart force
+                                    || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo >= 1)) // subLv80 ON CD use
                                     return NoMercy;
                             }
                         }
 
-                        if (!LevelChecked(BurstStrike) && delayNoMercy) //no cartridges unlocked
+                        // sub-Lv30
+                        if (!LevelChecked(BurstStrike) && quarterWeave)
                             return NoMercy;
                     }
 
-                    //oGCDs
+                    // oGCDs
                     if (CanWeave(actionID))
                     {
                         Status? sustainedDamage = FindTargetEffect(Variant.Debuffs.SustainedDamage);
@@ -125,38 +135,54 @@ namespace XIVSlothCombo.Combos.PvE
                                     return Bloodfest;
                             }
 
-
                             if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone))
                             {
-                                ////Blasting Zone outside of NM
-                                //if (!HasEffect(Buffs.NoMercy) && ((IsOnCooldown(GnashingFang) && GetCooldownRemainingTime(NoMercy) > 17) || //Post Gnashing Fang
-                                //    !LevelChecked(GnashingFang))) //Pre Gnashing Fang
-                                //    return OriginalHook(DangerZone);
+                                // Zone outside of NM
+                                if (!HasEffect(Buffs.NoMercy) && ((IsOnCooldown(GnashingFang) && GetCooldownRemainingTime(NoMercy) > 17) || // Post GF
+                                    !LevelChecked(GnashingFang))) // Pre GF
+                                    return OriginalHook(DangerZone);
 
-                                ////Stops DZ Drift
-                                //if (HasEffect(Buffs.NoMercy) && (!HasEffect(Buffs.ReadyToBreak) || !LevelChecked(SonicBreak)))
-                                //    return OriginalHook(DangerZone);
-
-                                if ((HasEffect(Buffs.NoMercy) && (!HasEffect(Buffs.ReadyToBreak) || !LevelChecked(SonicBreak))) ||
-                                    (!HasEffect(Buffs.NoMercy) && IsOnCooldown(NoMercy) && (IsOnCooldown(GnashingFang) || !LevelChecked(GnashingFang))))
+                                // stops Zone drift
+                                if (HasEffect(Buffs.NoMercy))
                                     return OriginalHook(DangerZone);
                             }
 
-                            if (IsEnabled(CustomComboPreset.GNB_ST_BowShock) && HasEffect(Buffs.NoMercy) && ActionReady(BowShock) && LevelChecked(BowShock) && !HasEffect(Buffs.ReadyToBreak))
-                                return BowShock;
+                            // Hypervelocity
+                            if (WasLastWeaponskill(BurstStrike) && LevelChecked(Hypervelocity) && HasEffect(Buffs.ReadyToBlast))
+                                return Hypervelocity;
 
-                                //Continuation
-                                if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(Continuation) &&
+                            // Continuation
+                            if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(Continuation) &&
                                 (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
                                 return OriginalHook(Continuation);
+
+                            // 60s weaves
+                            if (HasEffect(Buffs.NoMercy) && (GetBuffRemainingTime(Buffs.NoMercy) < 17.5))
+                            {
+                                // Post DD
+                                if (IsEnabled(CustomComboPreset.GNB_ST_BowShock) && ActionReady(BowShock) && LevelChecked(BowShock))
+                                    return BowShock;
+                                if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone))
+                                    return OriginalHook(DangerZone);
+
+                                // Pre DD
+                                if (!LevelChecked(DoubleDown))
+                                {
+                                    if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone))
+                                        return OriginalHook(DangerZone);
+                                    if (IsEnabled(CustomComboPreset.GNB_ST_BowShock) && ActionReady(BowShock) && LevelChecked(BowShock))
+                                        return BowShock;
+                                }
+                            }
                         }
                     }
 
+                    // GF combo usage
                     if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(Continuation) &&
                         (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
                         return OriginalHook(Continuation);
 
-                    //Reign combo
+                    // Reign combo
                     if (IsEnabled(CustomComboPreset.GNB_ST_Reign) && (LevelChecked(ReignOfBeasts) && (HasEffect(Buffs.NoMercy))))
                     {
                         if (HasEffect(Buffs.ReadyToReign) && GetBuffRemainingTime(Buffs.ReadyToReign) <= 30)
@@ -171,56 +197,115 @@ namespace XIVSlothCombo.Combos.PvE
                         }
                     }
 
-                    //Sonic Break
-                    if (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && HasEffect(Buffs.NoMercy) && HasEffect(Buffs.ReadyToBreak) && IsOnCooldown(GnashingFang))
+                    // Sonic Break 
+                    if (HasEffect(Buffs.NoMercy) && HasEffect(Buffs.ReadyToBreak))
                     {
-                        return SonicBreak;
+                        // Lv100
+                        if (LevelChecked(ReignOfBeasts))
+                        {
+                            // 2min
+                            if ((IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) &&
+                                !HasEffect(Buffs.ReadyToBlast) && gauge.Ammo == 2 && (GetBuffRemainingTime(Buffs.NoMercy) > 17.5) &&
+                                WasLastWeaponskill(BurstStrike) && GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest))
+                                // 1min 3 carts
+                                || (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) &&
+                                GetCooldownRemainingTime(Bloodfest) > 30 && gauge.Ammo == 3 &&
+                                (GetCooldownRemainingTime(NoMercy) > GCD) &&
+                                (WasLastWeaponskill(KeenEdge) || WasLastWeaponskill(BrutalShell) || WasLastWeaponskill(SolidBarrel)))
+                                // 1min 2 carts
+                                || (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) &&
+                                GetCooldownRemainingTime(Bloodfest) > 30 && gauge.Ammo == 0 &&
+                                !HasEffect(Buffs.ReadyToRip) && (GetBuffRemainingTime(Buffs.NoMercy) < 12.5) &&
+                                WasLastWeaponskill(GnashingFang) || WasLastAbility(SavageClaw)))
+                                return SonicBreak;
+                        }
+
+                        // Lv90 & below
+                        if (!LevelChecked(ReignOfBeasts))
+                        {
+                            // 2min
+                            if ((IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) &&
+                                !HasEffect(Buffs.ReadyToBlast) && gauge.Ammo == 3 &&
+                                GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest))
+                                // 1min 2 carts
+                                || (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) &&
+                                GetCooldownRemainingTime(Bloodfest) > 30 && gauge.Ammo == 0 &&
+                                !HasEffect(Buffs.ReadyToRip) && (GetBuffRemainingTime(Buffs.NoMercy) < 12.5) &&
+                                WasLastWeaponskill(GnashingFang) || WasLastAbility(SavageClaw))
+                                // 1min 3 carts
+                                || (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) &&
+                                GetCooldownRemainingTime(Bloodfest) > 30 && gauge.Ammo == 3 && (GetCooldownRemainingTime(NoMercy) > GCD) &&
+                                (WasLastWeaponskill(KeenEdge) || WasLastWeaponskill(BrutalShell) || WasLastWeaponskill(SolidBarrel))))
+                                return SonicBreak;
+                        }
                     }
 
-                    // 60s window features
-                    if (IsEnabled(CustomComboPreset.GNB_ST_DoubleDown) && HasEffect(Buffs.NoMercy))
+                    // Double Down
+                    if ((HasEffect(Buffs.NoMercy) || GetBuffRemainingTime(Buffs.NoMercy) >= GCD * 4) && IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup) && GetCooldownRemainingTime(DoubleDown) <= GCD + 0.25)
                     {
-                        if (LevelChecked(DoubleDown) && gauge.Ammo >= 2 && !HasEffect(Buffs.ReadyToBreak) && IsOffCooldown(DoubleDown))
-                            return DoubleDown;
-
-                        if (!LevelChecked(DoubleDown))
+                        // Lv100
+                        if (LevelChecked(ReignOfBeasts) && (IsEnabled(CustomComboPreset.GNB_ST_DoubleDown)))
                         {
-                            if (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && HasEffect(Buffs.ReadyToBreak) && (GetBuffRemainingTime(Buffs.NoMercy) <= GetCooldown(SonicBreak).CooldownTotal) && !HasEffect(Buffs.ReadyToRip) && IsOnCooldown(GnashingFang))
+                            if ((WasLastWeaponskill(SonicBreak) && gauge.Ammo == 2 && GetCooldownRemainingTime(Bloodfest) < GCD * 4 || IsOffCooldown(Bloodfest)) // 2min NM
+                                || (!HasEffect(Buffs.ReadyToBreak) && WasLastWeaponskill(SonicBreak) && gauge.Ammo == 3) // 1min NM 3 carts
+                                || (HasEffect(Buffs.ReadyToBreak) && WasLastWeaponskill(SolidBarrel) && gauge.Ammo == 3 && (GetBuffRemainingTime(Buffs.NoMercy) < 17))) // 1min NM 2 carts
+                                return DoubleDown;
+                        }
+
+                        // Lv90
+                        if (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && IsEnabled(CustomComboPreset.GNB_ST_DoubleDown))
+                        {
+                            if ((gauge.Ammo == 3 && !HasEffect(Buffs.ReadyToBreak) && WasLastWeaponskill(SonicBreak) && (GetCooldownRemainingTime(Bloodfest) < GCD * 4 || IsOffCooldown(Bloodfest))) // 2min NM 3 carts
+                                || (!HasEffect(Buffs.ReadyToBreak) && gauge.Ammo == 3 && WasLastWeaponskill(SonicBreak) && GetCooldownRemainingTime(Bloodfest) > 30) // 1min NM 3 carts
+                                || (HasEffect(Buffs.ReadyToBreak) && gauge.Ammo == 3 && WasLastWeaponskill(SolidBarrel) && GetCooldownRemainingTime(Bloodfest) > 30)) // 1min NM 2 carts
+                                return DoubleDown;
+                        }
+
+                        // subLv80
+                        if (!LevelChecked(DoubleDown) && !LevelChecked(ReignOfBeasts))
+                        {
+                            if (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && HasEffect(Buffs.ReadyToBreak) && (GetBuffRemainingTime(Buffs.NoMercy) >= GCD * 4) && !HasEffect(Buffs.ReadyToRip) && IsOnCooldown(GnashingFang))
                                 return SonicBreak;
-                            //sub level 54 functionality
-                            if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone) && !LevelChecked(SonicBreak) && HasEffect(Buffs.NoMercy) || GetCooldownRemainingTime(NoMercy) < 30)
+                            if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone) && !LevelChecked(SonicBreak) && HasEffect(Buffs.NoMercy) || GetCooldownRemainingTime(NoMercy) < 30)  // subLv54
                                 return OriginalHook(DangerZone);
                         }
                     }
 
-                    //Pre Gnashing Fang stuff
-                    if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(GnashingFang))
+                    // Gnashing Fang
+                    if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(GnashingFang) && GetCooldownRemainingTime(GnashingFang) <= GCD + 0.25)
                     {
-                        bool activeNoMercy = GetCooldownRemainingTime(NoMercy) > 50 || HasEffect(Buffs.NoMercy);
-                        if (IsEnabled(CustomComboPreset.GNB_ST_GnashingFang_Starter) && GetCooldownRemainingTime(GnashingFang) <= GetCooldownRemainingTime(KeenEdge) + 0.25 && !HasEffect(Buffs.ReadyToBlast) && gauge.AmmoComboStep == 0 &&
-                            ((gauge.Ammo == MaxCartridges(level) && activeNoMercy) || //Regular 60 second GF/NM timing
-                            (gauge.Ammo == 1 && HasEffect(Buffs.NoMercy) && GetCooldownRemainingTime(DoubleDown) > 50) || //NMDDGF windows/Scuffed windows
-                            (gauge.Ammo > 0 && GetCooldownRemainingTime(NoMercy) > 17 && GetCooldownRemainingTime(NoMercy) < 35) || //Regular 30 second window                                                                        
-                            (gauge.Ammo == 1 && GetCooldownRemainingTime(NoMercy) > 50 && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest))))) //Opener Conditions
+                        if ((IsEnabled(CustomComboPreset.GNB_ST_GnashingFang_Starter) && !HasEffect(Buffs.ReadyToBlast) && gauge.AmmoComboStep == 0 && HasEffect(Buffs.NoMercy) && WasLastWeaponskill(DoubleDown)) // 60s use; DD>GF (as of 7.0  DT)
+                            || (gauge.Ammo == 1 && HasEffect(Buffs.NoMercy) && GetCooldownRemainingTime(DoubleDown) > GCD * 4) //NMDDGF windows/Scuffed windows
+                            || (gauge.Ammo > 0 && GetCooldownRemainingTime(NoMercy) > 17 && GetCooldownRemainingTime(NoMercy) < 35) // 30s use                                                                    
+                            || (gauge.Ammo == 1 && GetCooldownRemainingTime(NoMercy) > GCD * 4 && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest)))) // Opener Conditions
                             return GnashingFang;
-                        if (gauge.AmmoComboStep is 1 or 2)
-                            return OriginalHook(GnashingFang);
-
-                        //if (WasLastWeaponskill(BurstStrike) && (LevelChecked(Hypervelocity) && HasEffect(Buffs.ReadyToBlast) && GetCooldownRemainingTime(GnashingFang) < 2.5))
-                        //    return Hypervelocity;
                     }
 
-                    if (IsEnabled(CustomComboPreset.GNB_ST_BurstStrike) && IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup))
+                    // Burst Strike
+                    if (!LevelChecked(ReignOfBeasts) && IsEnabled(CustomComboPreset.GNB_ST_BurstStrike))
                     {
-                        //final check if Burst Strike is used right before No Mercy ends
-                        if (LevelChecked(Hypervelocity) && HasEffect(Buffs.ReadyToBlast))
-                            return Hypervelocity;
-
-                        if (HasEffect(Buffs.NoMercy) && GetBuffRemainingTime(Buffs.NoMercy) > 2.5 && gauge.Ammo > 0 && !ActionReady(GnashingFang))
+                        if (HasEffect(Buffs.NoMercy))
+                        {
+                            if (gauge.Ammo >= 1 && gauge.AmmoComboStep == 0
+                                && GetCooldownRemainingTime(NoMercy) <= GCD * 3
+                                && !HasEffect(Buffs.ReadyToReign) && !HasEffect(Buffs.ReadyToBreak)
+                                && (GetCooldownRemainingTime(Bloodfest) > 60))
+                                return BurstStrike;
+                        }
+                        // Lv100 2cart 2min starter
+                        if (LevelChecked(ReignOfBeasts) && GetCooldownRemainingTime(NoMercy) <= GCD && gauge.Ammo is 3 && ((GetCooldownRemainingTime(Bloodfest) < GCD * 12) || IsOffCooldown(Bloodfest)))
                             return BurstStrike;
+
                     }
 
-                    // Regular 1-2-3 combo with overcap feature
+                    if (LevelChecked(ReignOfBeasts) && GetCooldownRemainingTime(NoMercy) <= GCD && gauge.Ammo is 3 && ((GetCooldownRemainingTime(Bloodfest) < GCD * 12) || IsOffCooldown(Bloodfest)))
+                        return BurstStrike;
+
+                    // GF combo
+                    if (gauge.AmmoComboStep is 1 or 2) // GF
+                        return OriginalHook(GnashingFang);
+
+                    // 123 (overcap included)
                     if (comboTime > 0)
                     {
                         if (lastComboMove == KeenEdge && LevelChecked(BrutalShell))
@@ -233,6 +318,8 @@ namespace XIVSlothCombo.Combos.PvE
                                 return BurstStrike;
                             return SolidBarrel;
                         }
+                        if (HasEffect(Buffs.NoMercy) && gauge.AmmoComboStep == 0 && LevelChecked(BurstStrike) && lastComboMove is BrutalShell && gauge.Ammo == 2)
+                            return SolidBarrel;
                     }
 
                     return KeenEdge;
@@ -264,30 +351,30 @@ namespace XIVSlothCombo.Combos.PvE
 
                             if (ActionReady(DangerZone))
                             {
-                                //Blasting Zone outside of NM
-                                if (!HasEffect(Buffs.NoMercy) && ((IsOnCooldown(GnashingFang) && GetCooldownRemainingTime(NoMercy) > 17) || //Post Gnashing Fang
-                                    !LevelChecked(GnashingFang))) //Pre Gnashing Fang
+                                // Zone outside of NM
+                                if (!HasEffect(Buffs.NoMercy) && ((IsOnCooldown(GnashingFang) && GetCooldownRemainingTime(NoMercy) > 17) || // Post GF
+                                    !LevelChecked(GnashingFang))) // Pre GF
                                     return OriginalHook(DangerZone);
 
-                                //Stops DZ Drift
+                                // stops Zone drift
                                 if (HasEffect(Buffs.NoMercy))
                                     return OriginalHook(DangerZone);
                             }
 
-                            //Continuation
+                            // Continuation
                             if (LevelChecked(Continuation) && (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
                                 return OriginalHook(Continuation);
 
-                            //60s weaves
+                            // 60s weaves
                             if (HasEffect(Buffs.NoMercy))
                             {
-                                //Post DD
+                                // Post DD
                                 if (ActionReady(DangerZone))
                                     return OriginalHook(DangerZone);
                                 if (ActionReady(BowShock) && LevelChecked(BowShock))
                                     return BowShock;
 
-                                //Pre DD
+                                // Pre DD
                                 if (!LevelChecked(DoubleDown))
                                 {
                                     if (ActionReady(BowShock) && LevelChecked(BowShock))
@@ -315,9 +402,9 @@ namespace XIVSlothCombo.Combos.PvE
 
                         if (!LevelChecked(DoubleDown) && IsEnabled(CustomComboPreset.GNB_GF_Cooldowns))
                         {
-                            if (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && ActionReady(SonicBreak) && (GetBuffRemainingTime(Buffs.NoMercy) <= GetCooldown(SonicBreak).CooldownTotal) && !HasEffect(Buffs.ReadyToRip) && IsOnCooldown(GnashingFang))
+                            if (IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && ActionReady(SonicBreak) && (GetBuffRemainingTime(Buffs.NoMercy) >= 10 && !HasEffect(Buffs.ReadyToRip) && IsOnCooldown(GnashingFang)))
                                 return SonicBreak;
-                            //sub level 54 functionality
+                            // subLv54
                             if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone) && !LevelChecked(SonicBreak))
                                 return OriginalHook(DangerZone);
                         }
@@ -379,6 +466,7 @@ namespace XIVSlothCombo.Combos.PvE
                 if (actionID == DemonSlice)
                 {
                     var gauge = GetJobGauge<GNBGauge>();
+                    float GCD = GetCooldown(KeenEdge).CooldownTotal; // GCD is 2.5sks only
 
                     if (IsEnabled(CustomComboPreset.GNB_Variant_Cure) && IsEnabled(Variant.VariantCure) && PlayerHealthPercentageHp() <= GetOptionValue(Config.GNB_VariantCure))
                         return Variant.VariantCure;
@@ -400,7 +488,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 return NoMercy;
                             if (IsEnabled(CustomComboPreset.GNB_AoE_BowShock) && ActionReady(BowShock) && LevelChecked(BowShock) && HasEffect(Buffs.NoMercy))
                                 return BowShock;
-                            if (IsEnabled(CustomComboPreset.GNB_AOE_DangerZone) && ActionReady(DangerZone))
+                            if (IsEnabled(CustomComboPreset.GNB_AOE_DangerZone) && ActionReady(DangerZone) && (HasEffect(Buffs.NoMercy) || GetCooldownRemainingTime(GnashingFang) <= GCD * 7))
                                 return OriginalHook(DangerZone);
                             if (IsEnabled(CustomComboPreset.GNB_AoE_Bloodfest) && gauge.Ammo == 0 && ActionReady(Bloodfest) && LevelChecked(Bloodfest) && HasEffect(Buffs.NoMercy))
                                 return Bloodfest;
@@ -408,7 +496,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 return FatedBrand;
                         }
 
-                        if (IsEnabled(CustomComboPreset.GNB_AOE_SonicBreak) && HasEffect(Buffs.ReadyToBreak) && !HasEffect(Buffs.ReadyToRaze) && (GetBuffRemainingTime(Buffs.NoMercy) <= GetCooldown(SonicBreak).CooldownTotal))
+                        if (IsEnabled(CustomComboPreset.GNB_AOE_SonicBreak) && HasEffect(Buffs.ReadyToBreak) && !HasEffect(Buffs.ReadyToRaze) && HasEffect(Buffs.NoMercy))
                             return SonicBreak;
                         if (IsEnabled(CustomComboPreset.GNB_AoE_DoubleDown) && gauge.Ammo >= 2 && ActionReady(DoubleDown) && HasEffect(Buffs.NoMercy))
                             return DoubleDown;
