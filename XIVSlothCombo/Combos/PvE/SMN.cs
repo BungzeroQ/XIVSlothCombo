@@ -403,6 +403,7 @@ namespace XIVSlothCombo.Combos.PvE
                 var IsBahamutReady = OriginalHook(Aethercharge) is SummonBahamut;
                 var IsPhoenixReady = OriginalHook(Aethercharge) is SummonPhoenix;
                 var IsSolarBahamutReady = OriginalHook(Aethercharge) is SummonSolarBahamut;
+                float GCD = GetCooldown(OriginalHook(Ruin)).CooldownTotal;
 
                 if (WasLastAction(OriginalHook(Aethercharge))) DemiAttackCount = 0;    // Resets counter
 
@@ -505,11 +506,10 @@ namespace XIVSlothCombo.Combos.PvE
                                         return Painflare;
                                 }
                             }
+
+                            if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.SearingLight) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
+                                return SearingFlash;
                         }
-
-                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
-                            return SearingFlash;
-
                         // Demi Nuke
                         if (OriginalHook(Ruin) is AstralImpulse or UmbralImpulse or FountainOfFire)
                         {
@@ -541,7 +541,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 if (IsOffCooldown(Sunflare) && LevelChecked(Sunflare) && OriginalHook(Ruin) is UmbralImpulse)
                                     return OriginalHook(AstralFlow);
                                 
-                                if (IsOffCooldown(LuxSolaris) && IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_LuxSolaris) && HasEffect(Buffs.RefulgentLux))
+                                if (IsOffCooldown(LuxSolaris) && ((IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_LuxSolaris) && HasEffect(Buffs.RefulgentLux)) || GetBuffRemainingTime(Buffs.RefulgentLux) < GCD))
                                     return OriginalHook(LuxSolaris);
                             }
                         }
@@ -575,6 +575,9 @@ namespace XIVSlothCombo.Combos.PvE
                                         SummonerBurstPhase is 0 or 1 or 2 or 3 && DemiAttackCount >= burstDelay) ||
                                         (SummonerBurstPhase == 4 && !HasEffect(Buffs.TitansFavor)))
                                     {
+                                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
+                                            return SearingFlash;
+
                                         if (STCombo)
                                             return OriginalHook(Fester);
 
