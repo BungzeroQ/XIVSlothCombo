@@ -121,8 +121,8 @@ namespace XIVSlothCombo.Combos.PvE
                 if (!InCombat()) return HardSlash;
 
                 // Disesteem
-                if ((LevelChecked(LivingShadow)
-                    || LevelChecked(Disesteem))
+                if (LevelChecked(LivingShadow)
+                    && LevelChecked(Disesteem)
                     && IsEnabled(CustomComboPreset.DRK_ST_CDs_Disesteem)
                     && HasEffect(Buffs.Scorn)
                     && ((gauge.DarksideTimeRemaining > 0 && GetBuffRemainingTime(Buffs.Scorn) < 26) // Optimal usage
