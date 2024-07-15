@@ -460,7 +460,7 @@ namespace XIVSlothCombo.Combos.PvE
                         }
 
                         if (canWeaveBuffs && battleVoiceReady &&
-                            ((GetBuffRemainingTime(Buffs.RagingStrikes) <= 16.5 || GetBuffRemainingTime(Buffs.RadiantFinale) <= 16.5) || openerFinished) && (IsOnCooldown(RagingStrikes) || IsOnCooldown(RadiantFinale)))
+                            ((GetBuffRemainingTime(Buffs.RagingStrikes) <= 16.5 || (GetBuffRemainingTime(Buffs.RadiantFinale) <= 16.5) || !LevelChecked(RadiantFinale)) || openerFinished) && (IsOnCooldown(RagingStrikes) || IsOnCooldown(RadiantFinale)))
                         {
                             if (!JustUsed(RagingStrikes))
                                 return BattleVoice;
