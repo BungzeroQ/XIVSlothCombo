@@ -506,31 +506,26 @@ namespace XIVSlothCombo.Combos.PvE
                         }
 
 
-                        if (LevelChecked(Bloodletter) && ((!openerFinished && IsOnCooldown(RagingStrikes)) || openerFinished))
+                        if (LevelChecked(RainOfDeath))
                         {
                             uint rainOfDeathCharges = GetRemainingCharges(RainOfDeath);
 
-                            if (IsEnabled(CustomComboPreset.BRD_Simple_Pooling) && LevelChecked(WanderersMinuet))
+                            if (LevelChecked(WanderersMinuet) && songWanderer)
                             {
-                                if (songWanderer)
-                                {
-                                    if (((HasEffect(Buffs.RagingStrikes) || ragingCD > 10) &&
-                                        (HasEffect(Buffs.BattleVoice) || battleVoiceCD > 10 ||
-                                        !LevelChecked(BattleVoice)) &&
-                                        (HasEffect(Buffs.RadiantFinale) || radiantCD > 10 ||
-                                        !LevelChecked(RadiantFinale)) &&
-                                        rainOfDeathCharges > 0) || rainOfDeathCharges > 2)
-                                        return OriginalHook(RainOfDeath);
-                                }
-
-                                if (songArmy && (rainOfDeathCharges == 3 || ((gauge.SongTimer / 1000) > 30 && rainOfDeathCharges > 0)))
-                                    return OriginalHook(RainOfDeath);
-                                if (songMage && rainOfDeathCharges > 0)
-                                    return OriginalHook(RainOfDeath);
-                                if (songNone && rainOfDeathCharges == 3)
+                                if (((HasEffect(Buffs.RagingStrikes) || ragingCD > 10) &&
+                               (HasEffect(Buffs.BattleVoice) || battleVoiceCD > 10 ||
+                               !LevelChecked(BattleVoice)) &&
+                               (HasEffect(Buffs.RadiantFinale) || radiantCD > 10 ||
+                               !LevelChecked(RadiantFinale)) &&
+                               rainOfDeathCharges > 0) || rainOfDeathCharges > 2)
                                     return OriginalHook(RainOfDeath);
                             }
-                            else if (rainOfDeathCharges > 0)
+
+                            if (songArmy && (rainOfDeathCharges == 3 || ((gauge.SongTimer / 1000) > 30 && rainOfDeathCharges > 0)))
+                                return OriginalHook(RainOfDeath);
+                            if (songMage && rainOfDeathCharges > 0)
+                                return OriginalHook(RainOfDeath);
+                            if (songNone && rainOfDeathCharges == 3)
                                 return OriginalHook(RainOfDeath);
                         }
 
@@ -661,9 +656,7 @@ namespace XIVSlothCombo.Combos.PvE
                     bool isEnemyHealthHigh = !IsEnabled(CustomComboPreset.BRD_Simple_NoWaste) || GetTargetHPPercent() > targetHPThreshold;
 
                     if (!InCombat() && (inOpener || openerFinished))
-                    {
                         openerFinished = false;
-                    }
 
                     if (!IsEnabled(CustomComboPreset.BRD_Simple_NoWaste))
                         openerFinished = true;
@@ -738,7 +731,7 @@ namespace XIVSlothCombo.Combos.PvE
                                     return WanderersMinuet;
                             }
                         }
-                        else if (songTimerInSeconds <= 3 && canWeave)
+                        else if (songTimerInSeconds <= 0 && canWeave)
                         {
                             bool balladReady = LevelChecked(MagesBallad) && IsOffCooldown(MagesBallad);
                             bool paeonReady = LevelChecked(ArmysPaeon) && IsOffCooldown(ArmysPaeon);

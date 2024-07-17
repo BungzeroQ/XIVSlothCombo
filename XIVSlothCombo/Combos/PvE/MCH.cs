@@ -338,9 +338,11 @@ namespace XIVSlothCombo.Combos.PvE
                         return Wildfire;
 
                     //Full Metal Field
-                    if (IsEnabled(CustomComboPreset.MCH_ST_Adv_Stabilizer_FullMetalField) &&
-                        HasEffect(Buffs.FullMetalMachinist) && WasLastWeaponskill(Excavator) &&
-                        LevelChecked(FullMetalField))
+                    if (IsEnabled(CustomComboPreset.MCH_ST_Adv_Stabilizer_FullMetalField) 
+                        && HasEffect(Buffs.FullMetalMachinist) 
+                        && (GetCooldownRemainingTime(Wildfire) < GCD || GetBuffRemainingTime(Buffs.FullMetalMachinist) < GCD)
+                        && !gauge.IsOverheated
+                        && LevelChecked(FullMetalField))
                         return FullMetalField;
 
                     //Heatblast, Gauss, Rico
@@ -355,7 +357,7 @@ namespace XIVSlothCombo.Combos.PvE
                             return OriginalHook(Ricochet);
                     }
 
-                    if (ReassembledTools(ref actionID, gauge))
+                    if (!gauge.IsOverheated &&  ReassembledTools(ref actionID, gauge))
                         return actionID;
 
                     //gauss and ricochet outside HC
@@ -379,9 +381,8 @@ namespace XIVSlothCombo.Combos.PvE
                     {
                         //Protection & ensures Hyper charged is double weaved with WF during reopener
                         if (HasEffect(Buffs.Hypercharged) && 
-                            ((LevelChecked(FullMetalField) && !HasEffect(Buffs.FullMetalMachinist) && GetCooldownRemainingTime(Wildfire) < 1.7) ||
-                            (!LevelChecked(FullMetalField) && GetCooldownRemainingTime(Wildfire) < 1.7) ||
-                            (GetBuffRemainingTime(Buffs.Hypercharged) < 2) ||
+                            (GetCooldownRemainingTime(Wildfire) < 1.55 ||
+                            (GetBuffRemainingTime(Buffs.Hypercharged) < 1.5) ||
                             !LevelChecked(Wildfire)))
                             return Hypercharge;
 
