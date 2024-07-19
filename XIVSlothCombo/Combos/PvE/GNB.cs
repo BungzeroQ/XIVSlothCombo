@@ -91,6 +91,9 @@ namespace XIVSlothCombo.Combos.PvE
                     if (IsEnabled(CustomComboPreset.GNB_ST_RangedUptime) && !InMeleeRange() && LevelChecked(LightningShot) && HasBattleTarget())
                         return LightningShot;
 
+                    if (ActionReady(All.HeadGraze) && CanInterruptEnemy() && CanDelayedWeave(actionID))
+                        return All.HeadGraze;
+
                     // No Mercy
                     if (IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_NoMercy))
                     {
@@ -101,7 +104,9 @@ namespace XIVSlothCombo.Combos.PvE
                                 if ((CombatEngageDuration().TotalSeconds < 30 && (LevelChecked(ReignOfBeasts) && lastComboMove is KeenEdge ||
                                     LevelChecked(DoubleDown) && lastComboMove is BrutalShell ||
                                     lastComboMove is SolidBarrel)) ||
-                                    (LevelChecked(ReignOfBeasts) && gauge.Ammo == MaxCartridges(level) && IsOffCooldown(NoMercy) && !WasLastWeaponskill(BurstStrike)) // Lv100 on CD use
+                                    (LevelChecked(ReignOfBeasts) && GetCooldownRemainingTime(NoMercy) < 1.2 && (
+                                        (CombatEngageDuration().Minutes % 2 == 0 && gauge.Ammo == MaxCartridges(level) && ActionReady(GnashingFang) && (!WasLastWeaponskill(BurstStrike) || HasEffect(Buffs.ReadyToBlast))) || 
+                                        (CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2)))  // Lv100 on CD use// Lv100 on CD use
                                     || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv90 1min On CD use
                                     || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo == MaxCartridges(level)) // Lv90 2min 3cart force
                                     || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo >= 1)) // subLv80 ON CD use
@@ -138,6 +143,11 @@ namespace XIVSlothCombo.Combos.PvE
                                     return Bloodfest;
                             }
 
+                            // Continuation
+                            if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(Continuation) &&
+                                (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
+                                return OriginalHook(Continuation);
+
                             if (IsEnabled(CustomComboPreset.GNB_ST_BlastingZone) && ActionReady(DangerZone) && CanWeave(actionID))
                             {
                                 // Zone outside of NM
@@ -146,7 +156,7 @@ namespace XIVSlothCombo.Combos.PvE
                                     return OriginalHook(DangerZone);
 
                                 // stops Zone drift
-                                if (HasEffect(Buffs.NoMercy))
+                                if (HasEffect(Buffs.NoMercy) && (IsOnCooldown(GnashingFang) || !LevelChecked(GnashingFang)))
                                     return OriginalHook(DangerZone);
                             }
 
@@ -157,11 +167,6 @@ namespace XIVSlothCombo.Combos.PvE
                                 LevelChecked(BowShock) && 
                                 GetBuffRemainingTime(Buffs.NoMercy) < (15 + GCD))
                                 return BowShock;
-
-                            // Continuation
-                            if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(Continuation) &&
-                                (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
-                                return OriginalHook(Continuation);
                         }
                     }
 

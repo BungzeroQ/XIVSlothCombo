@@ -3648,6 +3648,7 @@ namespace XIVSlothCombo.Combos
         #endregion
 
         #region VIPER
+
         [ReplaceSkill(VPR.SteelFangs)]
         [ConflictingCombos(VPR_ST_AdvancedMode)]
         [CustomComboInfo("Simple Mode - Single Target", "Replaces Steel Fangs with a full one-button single target rotation.\nThis is the ideal option for newcomers to the job.", VPR.JobID)]
@@ -3710,19 +3711,23 @@ namespace XIVSlothCombo.Combos
 
         [ParentCombo(VPR_ST_AdvancedMode)]
         [CustomComboInfo("Ranged Uptime Option", "Adds Writhing Snap to the rotation when you are out of melee range.", VPR.JobID)]
-        VPR_ST_RangedUptime = 30096,
+        VPR_ST_RangedUptime = 30095,
 
         [ParentCombo(VPR_ST_RangedUptime)]
         [CustomComboInfo("Add Uncoiled Fury", "Adds Uncoiled Fury to the rotation when you are out of melee range and have Rattling Coil charges.", VPR.JobID)]
-        VPR_ST_RangedUptimeUncoiledFury = 30097,
+        VPR_ST_RangedUptimeUncoiledFury = 30096,
 
         [ParentCombo(VPR_ST_AdvancedMode)]
         [CustomComboInfo("Combo Heals Option", "Adds Bloodbath and Second Wind to the rotation.", VPR.JobID)]
-        VPR_ST_ComboHeals = 30098,
+        VPR_ST_ComboHeals = 30097,
 
         [ParentCombo(VPR_ST_AdvancedMode)]
         [CustomComboInfo("Dynamic True North Option", "Adds True North when you are not in the correct position for the enhanced potency bonus.", VPR.JobID)]
-        VPR_TrueNorthDynamic = 30099,
+        VPR_TrueNorthDynamic = 30098,
+
+        [ParentCombo(VPR_TrueNorthDynamic)]
+        [CustomComboInfo("Hold True North for Dreadwinder", "Will hold the last charge of True North for use with Dreadwinder, even when out of position for other Positionals.", VPR.JobID)]
+        VPR_TrueNorthDynamic_HoldCharge = 30099,
 
         #endregion
 
@@ -3800,7 +3805,7 @@ namespace XIVSlothCombo.Combos
         [CustomComboInfo("Uncoiled - Twins", "Replaces Uncoiled Fury with Uncoiled Twinfang and Uncoiled Twinblood.", VPR.JobID)]
         VPR_UncoiledTwins = 30202,
 
-        [ReplaceSkill(VPR.Reawaken)]
+        [ReplaceSkill(VPR.Reawaken, VPR.DreadFangs)]
         [CustomComboInfo("Reawaken - Generation", "Replaces Option with the Generations.", VPR.JobID)]
         VPR_ReawakenLegacy = 30203,
 
