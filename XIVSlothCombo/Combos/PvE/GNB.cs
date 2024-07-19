@@ -101,11 +101,12 @@ namespace XIVSlothCombo.Combos.PvE
                         {
                             if (CanWeave(actionID))
                             {
-                                if ((CombatEngageDuration().TotalSeconds < 30 && (LevelChecked(ReignOfBeasts) && lastComboMove is KeenEdge ||
-                                    LevelChecked(DoubleDown) && lastComboMove is BrutalShell ||
+                                if ((CombatEngageDuration().TotalSeconds < 30 && 
+                                    ((LevelChecked(ReignOfBeasts) && lastComboMove is SolidBarrel) ||
+                                    (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && lastComboMove is BrutalShell) ||
                                     lastComboMove is SolidBarrel)) ||
-                                    (LevelChecked(ReignOfBeasts) && GetCooldownRemainingTime(NoMercy) < 1.2 && (
-                                        (CombatEngageDuration().Minutes % 2 == 0 && gauge.Ammo == MaxCartridges(level) && ActionReady(GnashingFang) && (!WasLastWeaponskill(BurstStrike) || HasEffect(Buffs.ReadyToBlast))) || 
+                                    (LevelChecked(ReignOfBeasts) && IsOffCooldown(NoMercy) && (
+                                        (CombatEngageDuration().Minutes % 2 == 0 && gauge.Ammo == MaxCartridges(level) && ActionReady(GnashingFang) && (!WasLastWeaponskill(BurstStrike)) || WasLastWeaponskill(SolidBarrel)) || 
                                         (CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2)))  // Lv100 on CD use// Lv100 on CD use
                                     || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv90 1min On CD use
                                     || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo == MaxCartridges(level)) // Lv90 2min 3cart force
@@ -224,7 +225,7 @@ namespace XIVSlothCombo.Combos.PvE
                             ((gauge.Ammo == MaxCartridges(level) && activeNoMercy) || //Regular 60 second GF/NM timing
                             (gauge.Ammo == 1 && HasEffect(Buffs.NoMercy) && ((LevelChecked(DoubleDown) && GetCooldownRemainingTime(DoubleDown) > (GetCooldown(NoMercy).CooldownTotal - (GCD * 4)))) || (!LevelChecked(DoubleDown))) || //NMDDGF windows/Scuffed windows
                             (gauge.Ammo > 0 && GetCooldownRemainingTime(NoMercy) > 17 && GetCooldownRemainingTime(NoMercy) < 35) || //Regular 30 second window                                                                        
-                            (gauge.Ammo == 0 && GetCooldownRemainingTime(NoMercy) > (GetCooldown(NoMercy).CooldownTotal - (GCD * 4)) && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest))))) //Opener Conditions
+                            (gauge.Ammo == 1 && GetCooldownRemainingTime(NoMercy) > (GetCooldown(NoMercy).CooldownTotal - (GCD * 4)) && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest))))) //Opener Conditions
                             return GnashingFang;
                     }
 
