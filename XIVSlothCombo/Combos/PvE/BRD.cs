@@ -6,6 +6,7 @@ using System;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.Core;
 using XIVSlothCombo.CustomComboNS;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBRD0;
 
 namespace XIVSlothCombo.Combos.PvE
 {
@@ -460,7 +461,7 @@ namespace XIVSlothCombo.Combos.PvE
                         }
 
                         if (canWeaveBuffs && battleVoiceReady &&
-                            ((GetBuffRemainingTime(Buffs.RagingStrikes) <= 16.5 || (GetBuffRemainingTime(Buffs.RadiantFinale) <= 16.5) || !LevelChecked(RadiantFinale)) || openerFinished) && (IsOnCooldown(RagingStrikes) || IsOnCooldown(RadiantFinale)))
+                            ((GetBuffRemainingTime(Buffs.RagingStrikes) <= 16.5 || GetBuffRemainingTime(Buffs.RadiantFinale) <= 16.5) || openerFinished) && (IsOnCooldown(RagingStrikes) || IsOnCooldown(RadiantFinale)))
                         {
                             if (!JustUsed(RagingStrikes))
                                 return BattleVoice;
@@ -506,26 +507,31 @@ namespace XIVSlothCombo.Combos.PvE
                         }
 
 
-                        if (LevelChecked(RainOfDeath))
+                        if (LevelChecked(Bloodletter) && ((!openerFinished && IsOnCooldown(RagingStrikes)) || openerFinished))
                         {
                             uint rainOfDeathCharges = GetRemainingCharges(RainOfDeath);
 
-                            if (LevelChecked(WanderersMinuet) && songWanderer)
+                            if (IsEnabled(CustomComboPreset.BRD_Simple_Pooling) && LevelChecked(WanderersMinuet))
                             {
-                                if (((HasEffect(Buffs.RagingStrikes) || ragingCD > 10) &&
-                               (HasEffect(Buffs.BattleVoice) || battleVoiceCD > 10 ||
-                               !LevelChecked(BattleVoice)) &&
-                               (HasEffect(Buffs.RadiantFinale) || radiantCD > 10 ||
-                               !LevelChecked(RadiantFinale)) &&
-                               rainOfDeathCharges > 0) || rainOfDeathCharges > 2)
+                                if (songWanderer)
+                                {
+                                    if (((HasEffect(Buffs.RagingStrikes) || ragingCD > 10) &&
+                                        (HasEffect(Buffs.BattleVoice) || battleVoiceCD > 10 ||
+                                        !LevelChecked(BattleVoice)) &&
+                                        (HasEffect(Buffs.RadiantFinale) || radiantCD > 10 ||
+                                        !LevelChecked(RadiantFinale)) &&
+                                        rainOfDeathCharges > 0) || rainOfDeathCharges > 2)
+                                        return OriginalHook(RainOfDeath);
+                                }
+
+                                if (songArmy && (rainOfDeathCharges == 3 || ((gauge.SongTimer / 1000) > 30 && rainOfDeathCharges > 0)))
+                                    return OriginalHook(RainOfDeath);
+                                if (songMage && rainOfDeathCharges > 0)
+                                    return OriginalHook(RainOfDeath);
+                                if (songNone && rainOfDeathCharges == 3)
                                     return OriginalHook(RainOfDeath);
                             }
-
-                            if (songArmy && (rainOfDeathCharges == 3 || ((gauge.SongTimer / 1000) > 30 && rainOfDeathCharges > 0)))
-                                return OriginalHook(RainOfDeath);
-                            if (songMage && rainOfDeathCharges > 0)
-                                return OriginalHook(RainOfDeath);
-                            if (songNone && rainOfDeathCharges == 3)
+                            else if (rainOfDeathCharges > 0)
                                 return OriginalHook(RainOfDeath);
                         }
 
@@ -656,7 +662,9 @@ namespace XIVSlothCombo.Combos.PvE
                     bool isEnemyHealthHigh = !IsEnabled(CustomComboPreset.BRD_Simple_NoWaste) || GetTargetHPPercent() > targetHPThreshold;
 
                     if (!InCombat() && (inOpener || openerFinished))
+                    {
                         openerFinished = false;
+                    }
 
                     if (!IsEnabled(CustomComboPreset.BRD_Simple_NoWaste))
                         openerFinished = true;
