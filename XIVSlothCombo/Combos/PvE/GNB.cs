@@ -99,19 +99,22 @@ namespace XIVSlothCombo.Combos.PvE
                     {
                         if (ActionReady(NoMercy))
                         {
-                            if (CanWeave(actionID))
+                            if (quarterWeave && (CombatEngageDuration().TotalSeconds < 30
+                                    && ((LevelChecked(ReignOfBeasts) && lastComboMove is SolidBarrel)
+                                    || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && lastComboMove is BrutalShell)
+                                    || lastComboMove is SolidBarrel)))
                             {
-                                if ((CombatEngageDuration().TotalSeconds < 30 && 
-                                    ((LevelChecked(ReignOfBeasts) && lastComboMove is SolidBarrel) ||
-                                    (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && lastComboMove is BrutalShell) ||
-                                    lastComboMove is SolidBarrel)) ||
-                                    (LevelChecked(ReignOfBeasts) && IsOffCooldown(NoMercy) && (
-                                        (CombatEngageDuration().Minutes % 2 == 0 && gauge.Ammo == MaxCartridges(level) && ActionReady(GnashingFang) && (!WasLastWeaponskill(BurstStrike)) || WasLastWeaponskill(SolidBarrel)) || 
-                                        (CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2)))  // Lv100 on CD use// Lv100 on CD use
-                                    || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv90 1min On CD use
-                                    || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo == MaxCartridges(level)) // Lv90 2min 3cart force
-                                    || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo >= 1)) // subLv80 ON CD use
-                                    return NoMercy;
+                                return NoMercy;
+                            }
+
+                            if ((CanWeave(actionID) && LevelChecked(ReignOfBeasts) && IsOffCooldown(NoMercy) && 
+                                    ((CombatEngageDuration().Minutes % 2 == 0 && gauge.Ammo == MaxCartridges(level) && ActionReady(GnashingFang) && (!WasLastWeaponskill(BurstStrike)) || WasLastWeaponskill(SolidBarrel)) 
+                                    || (CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2)))  // Lv100 on CD use// Lv100 on CD use
+                                || (CanWeave(actionID) && !LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv90 1min On CD use
+                                || (CanWeave(actionID) && !LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo == MaxCartridges(level)) // Lv90 2min 3cart force
+                                || (CanWeave(actionID) && !LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && (GetCooldownRemainingTime(Bloodfest) < 30 || IsOffCooldown(Bloodfest)) && gauge.Ammo >= 1)) // subLv80 ON CD use
+                            {
+                                return NoMercy;
                             }
                         }
 
