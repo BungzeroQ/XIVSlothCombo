@@ -6,7 +6,6 @@ using System;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.Core;
 using XIVSlothCombo.CustomComboNS;
-using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBRD0;
 
 namespace XIVSlothCombo.Combos.PvE
 {
@@ -760,19 +759,22 @@ namespace XIVSlothCombo.Combos.PvE
                         bool firstMinute = CombatEngageDuration().Minutes == 0;
                         bool restOfFight = CombatEngageDuration().Minutes > 0;
 
-                        if (!openerFinished && (!JustUsed(WanderersMinuet) || HasEffect(Buffs.BattleVoice)))
-                        {
-                            if (ragingReady && ((canWeaveBuffs && firstMinute) || (canWeaveDelayed && restOfFight)) &&
-                                (GetCooldownElapsed(BattleVoice) >= 2.3 || battleVoiceReady || !LevelChecked(BattleVoice)))
-                                return RagingStrikes;
-                        }
-                        else if (openerFinished)
-                        {
-                            if (ragingReady && ((canWeaveBuffs && firstMinute) || (canWeaveDelayed && restOfFight)) &&
-                            (HasEffect(Buffs.BattleVoice) || battleVoiceReady || !LevelChecked(BattleVoice)))
-                                return RagingStrikes;
+                        //if (!openerFinished && (!JustUsed(WanderersMinuet) || HasEffect(Buffs.BattleVoice)))
+                        //{
+                        //    if (ragingReady && ((canWeaveBuffs && firstMinute && WasLastAbility(BattleVoice)) || (canWeaveDelayed && restOfFight)) &&
+                        //        (GetCooldownElapsed(BattleVoice) >= 2.3 || battleVoiceReady || !LevelChecked(BattleVoice)))
+                        //        return RagingStrikes;
+                        //}
+                        //else if (openerFinished)
+                        //{
+                        //    if (ragingReady && ((canWeaveBuffs && firstMinute && WasLastAbility(BattleVoice)) || (canWeaveDelayed && restOfFight)) &&
+                        //    (HasEffect(Buffs.BattleVoice) || battleVoiceReady || !LevelChecked(BattleVoice)))
+                        //        return RagingStrikes;
+                        //}
 
-                        }
+                        if (ragingReady && ((canWeaveBuffs && firstMinute && WasLastAbility(BattleVoice)) || (canWeaveDelayed && restOfFight)) &&
+                          (HasEffect(Buffs.BattleVoice) || !LevelChecked(BattleVoice)))
+                            return RagingStrikes;
 
                         if (canWeaveBuffs && barrageReady && !HasEffect(Buffs.HawksEye) && HasEffect(Buffs.RagingStrikes))
                         {
@@ -793,7 +795,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 return RadiantFinale;
                         }
 
-                        if (canWeaveBuffs && battleVoiceReady &&
+                        if (canWeaveBuffs && battleVoiceReady && HasEffect(Buffs.RadiantFinale) &&
                             ((GetBuffRemainingTime(Buffs.RagingStrikes) <= 16.5 || GetBuffRemainingTime(Buffs.RadiantFinale) <= 16.5) || openerFinished) && (IsOnCooldown(RagingStrikes) || IsOnCooldown(RadiantFinale)))
                         {
                             if (!JustUsed(RagingStrikes))

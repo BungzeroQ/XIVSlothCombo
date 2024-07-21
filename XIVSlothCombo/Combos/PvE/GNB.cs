@@ -91,8 +91,8 @@ namespace XIVSlothCombo.Combos.PvE
                     if (IsEnabled(CustomComboPreset.GNB_ST_RangedUptime) && !InMeleeRange() && LevelChecked(LightningShot) && HasBattleTarget())
                         return LightningShot;
 
-                    if (ActionReady(All.HeadGraze) && CanInterruptEnemy() && CanDelayedWeave(actionID))
-                        return All.HeadGraze;
+                    if (ActionReady(All.Interject) && CanInterruptEnemy() && CanDelayedWeave(actionID))
+                        return All.Interject;
 
                     // No Mercy
                     if (IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_NoMercy))
