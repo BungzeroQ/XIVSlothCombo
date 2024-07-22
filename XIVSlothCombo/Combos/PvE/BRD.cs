@@ -6,6 +6,7 @@ using System;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.Core;
 using XIVSlothCombo.CustomComboNS;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBRD0;
 
 namespace XIVSlothCombo.Combos.PvE
 {
