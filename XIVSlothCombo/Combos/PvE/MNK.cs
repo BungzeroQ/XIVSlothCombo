@@ -423,7 +423,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 }
 
                                 // Delayed weave for Riddle of Fire specifically
-                                if (canDelayedWeave && lastComboMove == (LevelChecked(LeapingOpo) ? LeapingOpo : Bootshine) && IsOffCooldown(RiddleOfFire))
+                                if (canDelayedWeave && lastComboMove == Demolish && IsOffCooldown(RiddleOfFire))
                                     return RiddleOfFire;
 
                                 if (canWeave)
@@ -579,11 +579,11 @@ namespace XIVSlothCombo.Combos.PvE
 
                         if (canWeave)
                         {
-                            if (IsEnabled(CustomComboPreset.MNK_ST_Simple_Meditation) && LevelChecked(SteeledMeditation) && gauge.Chakra == 5 && LevelChecked(TwinSnakes))
+                            if (IsEnabled(CustomComboPreset.MNK_ST_Simple_Meditation) && LevelChecked(ForbiddenChakra) && gauge.Chakra >= 5 && LevelChecked(TwinSnakes))
                             {
-                                if (!LevelChecked(RiddleOfFire) || !IsEnabled(CustomComboPreset.MNK_ST_Simple_CDs) || (LevelChecked(RiddleOfFire) && GetCooldownRemainingTime(RiddleOfFire) >= 1.5 && IsOnCooldown(RiddleOfFire) && lastComboMove != RiddleOfFire))
+                                if (!LevelChecked(RiddleOfFire) || !IsEnabled(CustomComboPreset.MNK_ST_Simple_CDs) || (LevelChecked(RiddleOfFire) && (GetCooldownRemainingTime(RiddleOfFire) >= 1.5 || IsOnCooldown(RiddleOfFire)) && lastComboMove != RiddleOfFire))
                                 {
-                                    return OriginalHook(SteeledMeditation);
+                                    return ForbiddenChakra;
                                 }
                             }
                         }
@@ -660,7 +660,7 @@ namespace XIVSlothCombo.Combos.PvE
                     // Monk Rotation
                     if (IsEnabled(CustomComboPreset.MNK_ST_Meditation_Uptime) && !InMeleeRange() && gauge.Chakra < 5 && LevelChecked(SteeledMeditation))
                     {
-                        return SteeledMeditation;
+                        return OriginalHook(SteeledMeditation);
                     }
 
                     if (!HasEffect(Buffs.PerfectBalance))
@@ -703,7 +703,7 @@ namespace XIVSlothCombo.Combos.PvE
 
                         if (!LevelChecked(Demolish) || gauge.CoeurlFury > 0)
                         {
-                            if (canTrueNorth && !OnTargetsFlank())
+                            if (canDelayedWeave && canTrueNorth && !OnTargetsFlank())
                             {
                                 return All.TrueNorth;
                             }
@@ -712,7 +712,7 @@ namespace XIVSlothCombo.Combos.PvE
                         }
                         else
                         {
-                            if (canTrueNorth && !OnTargetsRear())
+                            if (canDelayedWeave && canTrueNorth && !OnTargetsRear())
                             {
                                 return All.TrueNorth;
                             }
