@@ -193,7 +193,7 @@ namespace XIVSlothCombo.Combos.PvE
                             if (HasEffect(Buffs.InnerReleaseStacks) || (HasEffect(Buffs.NascentChaos) && LevelChecked(InnerChaos)) || ((burstTime > 0 || HasEffect(Buffs.Berserk)) && beastGauge >= 50))
                                 return OriginalHook(InnerBeast);
 
-                            if (HasEffect(Buffs.NascentChaos) && LevelCheck(ChaoticCyclone) && beastGauge >= 50 
+                            if (HasEffect(Buffs.NascentChaos) && LevelChecked(ChaoticCyclone) && beastGauge >= 50)
                                 return OriginalHook(Decimate);
                         }
                     }

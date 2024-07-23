@@ -250,7 +250,7 @@ namespace XIVSlothCombo.Combos.PvE
                         return OriginalHook(GnashingFang);
 
                     if (IsEnabled(CustomComboPreset.GNB_ST_BurstStrike)
-                                   && HasEffect(Buffs.NoMercy
+                        && HasEffect(Buffs.NoMercy)
                           && gauge.Ammo > 0
                           && gauge.AmmoComboStep == 0
                           && !HasEffect(Buffs.ReadyToReign)
