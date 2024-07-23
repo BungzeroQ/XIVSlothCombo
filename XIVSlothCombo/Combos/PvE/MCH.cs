@@ -341,6 +341,7 @@ namespace XIVSlothCombo.Combos.PvE
                         CanWeave(actionID) && ActionReady(OriginalHook(RookOverdrive)))
                         return OriginalHook(RookOverdrive);
 
+
                     // BarrelStabilizer
                     if (IsEnabled(CustomComboPreset.MCH_ST_Adv_Stabilizer) &&
                         !gauge.IsOverheated && CanWeave(actionID) && ActionReady(BarrelStabilizer))
@@ -357,21 +358,26 @@ namespace XIVSlothCombo.Combos.PvE
                    LevelChecked(Hypercharge) && !gauge.IsOverheated && GetTargetHPPercent() >= Config.MCH_ST_HyperchargeHP)
                     {
                         //Protection & ensures Hyper charged is double weaved with WF during reopener
-                        if (HasEffect(Buffs.Hypercharged) && 
+                        if (HasEffect(Buffs.Hypercharged) && !HasEffect(Buffs.FullMetalMachinist) &&
                             (GetCooldownRemainingTime(Wildfire) <= 1.5 ||
-                            GetBuffRemainingTime(Buffs.Hypercharged) <= GCD||
+                            GetBuffRemainingTime(Buffs.Hypercharged) <= GCD ||
                             !LevelChecked(Wildfire)))
                             return Hypercharge;
 
-                        if (!HasEffect(Buffs.Hypercharged) && drillCD && anchorCD && sawCD &&
-                            ((GetCooldownRemainingTime(Wildfire) > 40 && LevelChecked(Wildfire)) || !LevelChecked(Wildfire)))
+                        if  (!HasEffect(Buffs.Hypercharged) && (drillCD && anchorCD && sawCD &&
+                            ((GetCooldownRemainingTime(Wildfire) > 20 && LevelChecked(Wildfire)) || !LevelChecked(Wildfire))))
                             return Hypercharge;
                     }
+
+                    //Queen
+                    if (UseQueen(gauge))
+                        return OriginalHook(RookAutoturret);
 
                     //Full Metal Field
                     if (IsEnabled(CustomComboPreset.MCH_ST_Adv_Stabilizer_FullMetalField) &&
                         HasEffect(Buffs.FullMetalMachinist) &&
                         LevelChecked(FullMetalField) &&
+                        !gauge.IsOverheated &&
                         (GetCooldownRemainingTime(Wildfire) <= GCD || GetBuffRemainingTime(Buffs.FullMetalMachinist) < GCD * 2))
                         return OriginalHook(BarrelStabilizer);
 
@@ -392,10 +398,6 @@ namespace XIVSlothCombo.Combos.PvE
                     if (IsEnabled(CustomComboPreset.MCH_ST_Adv_Heatblast) &&
                        gauge.IsOverheated && LevelChecked(OriginalHook(Heatblast)))
                         return OriginalHook(Heatblast);
-
-                    //Queen
-                    if (UseQueen(gauge))
-                        return OriginalHook(RookAutoturret);
 
                     //gauss and ricochet outside HC
                     if (IsEnabled(CustomComboPreset.MCH_ST_Adv_GaussRicochet) &&
@@ -510,15 +512,33 @@ namespace XIVSlothCombo.Combos.PvE
                     ((LevelChecked(FullMetalField) && !WasLastWeaponskill(FullMetalField)) || !LevelChecked(FullMetalField)))
                 {
                     int queensUsed = ActionWatching.CombatActions.Count(x => x == OriginalHook(RookAutoturret));
-
+            
                     if (queensUsed < 1)
                         return true;
 
-                    if (queensUsed >= 1 && queensUsed % 2 == 0 && gauge.Battery == 100)
-                        return true;
+                    if (queensUsed >= 1)
+                    {
+                        if (LevelChecked(BarrelStabilizer) && LevelChecked(Excavator))
+                        {
+                            if ((GetCooldownRemainingTime(BarrelStabilizer) > 90) ||
+                                (GetCooldownRemainingTime(BarrelStabilizer) > 49 && GetCooldownRemainingTime(BarrelStabilizer) < 60) &&
+                                gauge.Battery >= 50)
+                            {
+                                return true;
+                            }
 
-                    if (queensUsed >= 1 && queensUsed % 2 == 1 && gauge.Battery >= 50)
-                        return true;
+                            if (gauge.Battery == 100)
+                                return true;
+                        }
+                        else
+                        {
+                            if (queensUsed % 2 == 0 && gauge.Battery == 100)
+                                return true;
+
+                            if (queensUsed % 2 == 1 && gauge.Battery >= 50)
+                                return true;
+                        }
+                    }
                 }
 
                 return false;
