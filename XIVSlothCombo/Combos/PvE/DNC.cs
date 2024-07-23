@@ -503,7 +503,6 @@ namespace XIVSlothCombo.Combos.PvE
                 if (LevelChecked(Fountain) && lastComboMove is Cascade && comboTime > 0)
                     return Fountain;
                 #endregion
->>>>>>> main
 
                 return actionID;
             }
@@ -805,7 +804,6 @@ namespace XIVSlothCombo.Combos.PvE
                 if (LevelChecked(Bladeshower) && lastComboMove is Windmill && comboTime > 0)
                     return Bladeshower;
                 #endregion
->>>>>>> main
 
                 return actionID;
             }
