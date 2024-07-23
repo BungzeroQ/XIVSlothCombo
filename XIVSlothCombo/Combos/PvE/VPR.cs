@@ -1022,10 +1022,12 @@ namespace XIVSlothCombo.Combos.PvE
 
                 if (actionID is Dreadwinder)
                 {
-                    if (HasEffect(Buffs.HuntersVenom))
-                        return OriginalHook(Twinfang);
+                    if (IsEnabled(CustomComboPreset.VPR_DreadwinderCoils_oGCDs))
+                    {
+                        if (HasEffect(Buffs.HuntersVenom))
+                            return OriginalHook(Twinfang);
 
-                    if (HasEffect(Buffs.SwiftskinsVenom))
+                        if (HasEffect(Buffs.SwiftskinsVenom))
                         return OriginalHook(Twinblood);
 
                     if (positionalChoice is 0)
@@ -1062,13 +1064,16 @@ namespace XIVSlothCombo.Combos.PvE
 
                 if (actionID is PitofDread)
                 {
-                    if (HasEffect(Buffs.FellhuntersVenom))
-                        return OriginalHook(Twinfang);
+                        if (IsEnabled(CustomComboPreset.VPR_PitOfDreadDens_oGCDs))
+                        {
+                            if (HasEffect(Buffs.FellhuntersVenom))
+                                return OriginalHook(Twinfang);
 
-                    if (HasEffect(Buffs.FellskinsVenom))
-                        return OriginalHook(Twinblood);
+                            if (HasEffect(Buffs.FellskinsVenom))
+                                return OriginalHook(Twinblood);
+                        }
 
-                    if (SwiftskinsDenReady)
+                        if (SwiftskinsDenReady)
                         return HuntersDen;
 
                     if (PitOfDreadReady)
