@@ -184,8 +184,8 @@ namespace XIVSlothCombo.Combos.PvE
 
                         if (IsEnabled(CustomComboPreset.WAR_ST_StormsPath_PrimalRuination)
                             && HasEffect(Buffs.PrimalRuinationReady)
-                            && LevelChecked(PrimalRuination)
-                            && WasLastWeaponskill(PrimalRend))
+                            && LevelChecked(PrimalRuination))
+                            //&& WasLastWeaponskill(PrimalRend))
                             return PrimalRuination;
 
                         if (IsEnabled(CustomComboPreset.WAR_ST_StormsPath_FellCleave) && LevelChecked(InnerBeast))

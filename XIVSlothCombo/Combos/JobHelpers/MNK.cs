@@ -27,6 +27,12 @@ namespace XIVSlothCombo.Combos.JobHelpers
             if (!CustomComboFunctions.ActionReady(Meditation) && Gauge.Chakra < 5)
                 return false;
 
+            if (Gauge.Nadi != Dalamud.Game.ClientState.JobGauge.Enums.Nadi.NONE)
+                return false;
+
+            if (Gauge.RaptorFury != 0) return false;
+            if (Gauge.CoeurlFury != 0) return false;
+
             return true;
         }
 
@@ -94,6 +100,12 @@ namespace XIVSlothCombo.Combos.JobHelpers
                     return true;
                 }
 
+                if (!CustomComboFunctions.HasEffect(Buffs.FormlessFist) && !CustomComboFunctions.HasEffect(Buffs.RaptorForm) && PrePullStep == 1)
+                {
+                    actionID = FormShift;
+                    return true;
+                }
+
                 if (CustomComboFunctions.WasLastAction(DragonKick) && PrePullStep == 1) CurrentState = OpenerState.InOpener;
                 else if (PrePullStep == 1) actionID = DragonKick;
 
@@ -113,6 +125,14 @@ namespace XIVSlothCombo.Combos.JobHelpers
 
             if (currentState == OpenerState.InOpener)
             {
+                if (CustomComboFunctions.IsEnabled(CustomComboPreset.MNK_STUseTheForbiddenChakra)
+                    && Gauge.Chakra >= 5
+                    && OpenerStep > 2)
+                {
+                    actionID = TheForbiddenChakra;
+                    return true;
+                }
+
                 if (CustomComboFunctions.WasLastAction(PerfectBalance) && OpenerStep == 1) OpenerStep++;
                 else if (OpenerStep == 1) actionID = PerfectBalance;
 
@@ -197,6 +217,14 @@ namespace XIVSlothCombo.Combos.JobHelpers
 
             if (currentState == OpenerState.InOpener)
             {
+                if (CustomComboFunctions.IsEnabled(CustomComboPreset.MNK_STUseTheForbiddenChakra)
+                    && Gauge.Chakra >= 5
+                    && OpenerStep > 2)
+                {
+                    actionID = TheForbiddenChakra;
+                    return true;
+                }
+
                 if (CustomComboFunctions.WasLastAction(PerfectBalance) && OpenerStep == 1) OpenerStep++;
                 else if (OpenerStep == 1) actionID = PerfectBalance;
 

@@ -442,7 +442,7 @@ namespace XIVSlothCombo.Combos.PvE
                         {
                             if (IsEnabled(CustomComboPreset.SMN_SearingLight_Burst))
                             {
-                                if (SummonerBurstPhase is 0 or 1 && ((!LevelChecked(SummonSolarBahamut) && OriginalHook(Ruin) is AstralImpulse) || OriginalHook(Ruin) is UmbralImpulse) ||
+                                if (SummonerBurstPhase is 0 or 1 && ((!LevelChecked(SummonSolarBahamut) && OriginalHook(Ruin) is AstralImpulse) || OriginalHook(Ruin) is UmbralImpulse) && DemiAttackCount >= 1 ||
                                     (SummonerBurstPhase == 2 && OriginalHook(Ruin) == FountainOfFire) ||
                                     (SummonerBurstPhase == 3 && OriginalHook(Ruin) is AstralImpulse or UmbralImpulse or FountainOfFire) ||
                                     (SummonerBurstPhase == 4))
@@ -507,14 +507,16 @@ namespace XIVSlothCombo.Combos.PvE
                                         return Painflare;
                                 }
                             }
-
-                            if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.SearingLight) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
-                                return SearingFlash;
                         }
+
+                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
+                            return SearingFlash;
+
                         // Demi Nuke
                         if (OriginalHook(Ruin) is AstralImpulse or UmbralImpulse or FountainOfFire)
                         {
-                            if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && IsBahamutReady && (LevelChecked(SummonSolarBahamut) || DemiAttackCount >= burstDelay))
+                            if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && IsBahamutReady && (LevelChecked(SummonSolarBahamut) || DemiAttackCount >= burstDelay) 
+                                && (IsNotEnabled(CustomComboPreset.SMN_SearingLight_Burst) || HasEffect(Buffs.SearingLight)))
                             {
                                 if (IsOffCooldown(OriginalHook(EnkindleBahamut)) && LevelChecked(SummonBahamut))
                                     return OriginalHook(EnkindleBahamut);
@@ -534,7 +536,8 @@ namespace XIVSlothCombo.Combos.PvE
                             }
                             
                             // Demi Nuke 3: More Boogaloo
-                            if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && IsSolarBahamutReady && DemiAttackCount >= burstDelay)
+                            if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && IsSolarBahamutReady && DemiAttackCount >= burstDelay && 
+                                (IsNotEnabled(CustomComboPreset.SMN_SearingLight_Burst) || HasEffect(Buffs.SearingLight)))
                             {
                                 if (IsOffCooldown(OriginalHook(EnkindleSolarBahamut)) && LevelChecked(SummonSolarBahamut))
                                     return OriginalHook(EnkindleSolarBahamut);
@@ -542,7 +545,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 if (IsOffCooldown(Sunflare) && LevelChecked(Sunflare) && OriginalHook(Ruin) is UmbralImpulse)
                                     return OriginalHook(AstralFlow);
                                 
-                                if (IsOffCooldown(LuxSolaris) && ((IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_LuxSolaris) && HasEffect(Buffs.RefulgentLux)) || GetBuffRemainingTime(Buffs.RefulgentLux) < GCD))
+                                if (IsOffCooldown(LuxSolaris) && IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_LuxSolaris) && HasEffect(Buffs.RefulgentLux))
                                     return OriginalHook(LuxSolaris);
                             }
                         }
@@ -576,14 +579,14 @@ namespace XIVSlothCombo.Combos.PvE
                                         SummonerBurstPhase is 0 or 1 or 2 or 3 && DemiAttackCount >= burstDelay) ||
                                         (SummonerBurstPhase == 4 && !HasEffect(Buffs.TitansFavor)))
                                     {
-                                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
-                                            return SearingFlash;
-
                                         if (STCombo)
                                             return OriginalHook(Fester);
 
                                         if (AoECombo && LevelChecked(Painflare) && IsNotEnabled(CustomComboPreset.SMN_DemiEgiMenu_oGCDPooling_Only))
                                             return Painflare;
+
+                                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
+                                            return SearingFlash;
                                     }
                                 }
                             }
@@ -597,8 +600,8 @@ namespace XIVSlothCombo.Combos.PvE
                     // Demi
                     if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons))
                     {
-                        if (gauge.SummonTimerRemaining == 0 && IsOffCooldown(OriginalHook(Aethercharge)) &&
-                            ((LevelChecked(Aethercharge) && !LevelChecked(SummonBahamut) && InCombat()) ||   // Pre-Bahamut Phase
+                        if (InCombat() && gauge.SummonTimerRemaining == 0 && IsOffCooldown(OriginalHook(Aethercharge)) &&
+                            ((LevelChecked(Aethercharge) && !LevelChecked(SummonBahamut)) ||   // Pre-Bahamut Phase
                              (IsBahamutReady && LevelChecked(SummonBahamut)) ||            // Bahamut Phase
                              (IsPhoenixReady && LevelChecked(SummonPhoenix)) ||            // Phoenix Phase
                              (IsSolarBahamutReady && LevelChecked(SummonSolarBahamut))))   // Solar Bahamut Phase

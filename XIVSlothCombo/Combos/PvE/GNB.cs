@@ -99,16 +99,17 @@ namespace XIVSlothCombo.Combos.PvE
                     // No Mercy
                     if (IsEnabled(CustomComboPreset.GNB_ST_MainCombo_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_NoMercy))
                     {
-                        if (ActionReady(NoMercy))
+                        if (ActionReady(NoMercy) && GetTargetHPPercent() > 1)
                         {
-                            if (quarterWeave && (CombatEngageDuration().TotalSeconds < 30
-                                    && ((LevelChecked(ReignOfBeasts) && lastComboMove is SolidBarrel)
+                            if (CanWeave(actionID, 0.1) && (CombatEngageDuration().TotalSeconds < 30
+                                    && ((LevelChecked(ReignOfBeasts) && lastComboMove is KeenEdge)
                                     || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && lastComboMove is BrutalShell)
                                     || lastComboMove is SolidBarrel)))
                             {
                                 return NoMercy;
                             }
-                            else if ((CanWeave(actionID) && LevelChecked(ReignOfBeasts) && IsOffCooldown(NoMercy) &&
+                            
+                            if ((CanWeave(actionID, 0.25) && LevelChecked(ReignOfBeasts) && IsOffCooldown(NoMercy) &&
                                     ((GetCooldownRemainingTime(Bloodfest) <= 30 && gauge.Ammo == MaxCartridges(level) && ActionReady(GnashingFang) && (!WasLastWeaponskill(BurstStrike)) || WasLastWeaponskill(SolidBarrel))
                                     || (GetCooldownRemainingTime(Bloodfest) > 30 && gauge.Ammo >= 2)))  // Lv100 on CD use// Lv100 on CD use
                                 || (CanWeave(actionID) && !LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && CombatEngageDuration().Minutes % 2 == 1 && gauge.Ammo >= 2 && IsOffCooldown(NoMercy)) // Lv90 1min On CD use
@@ -172,7 +173,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 HasEffect(Buffs.NoMercy) &&
                                 ActionReady(BowShock) &&
                                 LevelChecked(BowShock) &&
-                                GetBuffRemainingTime(Buffs.NoMercy) <= 15)
+                                GetBuffRemainingTime(Buffs.NoMercy) < 16)
                                 return BowShock;
                         }
                     }
@@ -210,17 +211,6 @@ namespace XIVSlothCombo.Combos.PvE
                         }
                     }
 
-                    // Gnashing Fang
-                    if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && LevelChecked(GnashingFang))
-                    {
-                        if (IsEnabled(CustomComboPreset.GNB_ST_GnashingFang_Starter) && GetCooldownRemainingTime(GnashingFang) <= 0.5 && !HasEffect(Buffs.ReadyToBlast) && gauge.AmmoComboStep == 0 &&
-                            ((HasEffect(Buffs.NoMercy) && WasLastWeaponskill(DoubleDown)) // 60s use; DD>GF (as of 7.0  DT)
-                            || (gauge.Ammo == 1 && HasEffect(Buffs.NoMercy) && GetCooldownRemainingTime(DoubleDown) > GCD * 4) //NMDDGF windows/Scuffed windows
-                            || (gauge.Ammo > 0 && GetCooldownRemainingTime(NoMercy) > GCD * 7 && GetCooldownRemainingTime(NoMercy) < GCD * 14) // 30s use                                                                    
-                            || (gauge.Ammo == 1 && GetCooldownRemainingTime(NoMercy) > GCD * 4 && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest))))) // Opener Conditions
-                            return GnashingFang;
-                    }
-
                     // Reign combo
                     if (IsEnabled(CustomComboPreset.GNB_ST_Reign) && (LevelChecked(ReignOfBeasts)))
                     {
@@ -242,7 +232,7 @@ namespace XIVSlothCombo.Combos.PvE
                             ((gauge.Ammo == MaxCartridges(level) && activeNoMercy) || //Regular 60 second GF/NM timing
                             (gauge.Ammo == 1 && HasEffect(Buffs.NoMercy) && ((LevelChecked(DoubleDown) && GetCooldownRemainingTime(DoubleDown) > (GetCooldown(NoMercy).CooldownTotal - (GCD * 4)))) || (!LevelChecked(DoubleDown))) || //NMDDGF windows/Scuffed windows
                             (gauge.Ammo > 0 && GetCooldownRemainingTime(NoMercy) > 17 && GetCooldownRemainingTime(NoMercy) < 35) || //Regular 30 second window                                                                        
-                            (gauge.Ammo == 1 && GetCooldownRemainingTime(NoMercy) > (GetCooldown(NoMercy).CooldownTotal - (GCD * 4)) && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest))))) //Opener Conditions
+                            (gauge.Ammo == 0 && GetCooldownRemainingTime(NoMercy) > (GetCooldown(NoMercy).CooldownTotal - (GCD * 4)) && ((IsOffCooldown(Bloodfest) && LevelChecked(Bloodfest)) || !LevelChecked(Bloodfest))))) //Opener Conditions
                             return GnashingFang;
                     }
 
@@ -250,14 +240,13 @@ namespace XIVSlothCombo.Combos.PvE
                         return OriginalHook(GnashingFang);
 
                     if (IsEnabled(CustomComboPreset.GNB_ST_BurstStrike)
-                        && HasEffect(Buffs.NoMercy)
-                          && gauge.Ammo > 0
-                          && gauge.AmmoComboStep == 0
-                          && !HasEffect(Buffs.ReadyToReign)
-                          && !HasEffect(Buffs.ReadyToBreak)
-                          && !ActionReady(GnashingFang)
-                          && (GetCooldownRemainingTime(Bloodfest) < GCD * 12 || IsOffCooldown(Bloodfest)))
-                                          return BurstStrike;
+                            && gauge.AmmoComboStep == 0
+                            && !HasEffect(Buffs.ReadyToReign)
+                            && !HasEffect(Buffs.ReadyToBreak)
+                            && GetCooldownRemainingTime(GnashingFang) > GetCooldownRemainingTime(KeenEdge) + 0.25
+                            && ((HasEffect(Buffs.NoMercy) && gauge.Ammo > 0) || (GetCooldownRemainingTime(Bloodfest) > 90 && gauge.Ammo > 1)) || (GetTargetHPPercent() < 1 && gauge.Ammo > 0))
+                        return BurstStrike;
+
 
                     // 123 (overcap included)
                     if (comboTime > 0)

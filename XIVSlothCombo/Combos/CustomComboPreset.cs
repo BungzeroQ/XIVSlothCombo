@@ -1840,7 +1840,7 @@ namespace XIVSlothCombo.Combos
 
         [ReplaceSkill([MNK.Bootshine])]
         [CustomComboInfo("Basic ST Rotation", "Basic Monk Combo on one button", MNK.JobID)]
-        [ConflictingCombos(MNK_ST_AdvancedMode)]
+        [ConflictingCombos(MNK_ST_AdvancedMode, MNK_ST_BallHandlers)]
         MNK_ST_BasicMode = 9002,
         
         [ReplaceSkill([MNK.ArmOfTheDestroyer])]
@@ -1854,7 +1854,7 @@ namespace XIVSlothCombo.Combos
         #region Monk Advanced ST
         [ReplaceSkill([MNK.Bootshine])]
         [CustomComboInfo("Custom ST Rotation", "Advanced Monk Combo on one button", MNK.JobID)]
-        [ConflictingCombos(MNK_ST_BasicMode)]
+        [ConflictingCombos(MNK_ST_BasicMode, MNK_ST_BallHandlers)]
         MNK_ST_AdvancedMode = 9005,
 
         [ParentCombo(MNK_ST_AdvancedMode)]
@@ -1909,9 +1909,37 @@ namespace XIVSlothCombo.Combos
         [CustomComboInfo("Combo Heals Option", "Adds Bloodbath and Second Wind to the rotation.", MNK.JobID)]
         MNK_ST_ComboHeals = 9018,
 
-        // Last value = 9031
+
 
         #endregion
+        // Last value = 9018
+
+        [ConflictingCombos(MNK_ST_AdvancedMode, MNK_ST_BasicMode)]
+        [CustomComboInfo("Ball Handlers", "Replace core rotation skills with single button, depending on current balls.", MNK.JobID)]
+        MNK_ST_BallHandlers = 9019,
+
+        [ReplaceSkill(MNK.Bootshine)]
+        [CustomComboInfo("Opo-opo", "Replace Bootshine/Leaping Opo with Dragon Kick.", MNK.JobID)]
+        [ParentCombo(MNK_ST_BallHandlers)]
+        MNK_BALLS_OPOOPO = 9020,
+
+        [ReplaceSkill(MNK.TrueStrike)]
+        [CustomComboInfo("Raptor", "Replace True Strike/Rising Raptor with Twin Snakes.", MNK.JobID)]
+        [ParentCombo(MNK_ST_BallHandlers)]
+        MNK_BALLS_RAPTOR = 9021,
+
+        [ReplaceSkill(MNK.SnapPunch)]
+        [CustomComboInfo("Coeurl", "Replace Snap Punch/Pouncing Coeurl with Demolish.", MNK.JobID)]
+        [ParentCombo(MNK_ST_BallHandlers)]
+        MNK_BALLS_COEURL = 9022,
+
+        [ReplaceSkill(MNK.PerfectBalance)]
+        [CustomComboInfo("Perfect Balance Feature", "Perfect Balance becomes Masterful Blitz while you have 3 Beast Chakra.", MNK.JobID)]
+        MNK_PerfectBalance = 9023,
+
+        [ReplaceSkill(MNK.RiddleOfFire)]
+        [CustomComboInfo("Riddle of Fire/Brotherhood Feature", "Replaces Riddle of Fire with Brotherhood when Riddle of Fire is on cooldown.", MNK.JobID)]
+        MNK_Riddle_Brotherhood = 9024,
 
         // End Monk
         #endregion
@@ -3660,7 +3688,7 @@ namespace XIVSlothCombo.Combos
         VPR_ST_Opener = 30002,
 
         [ParentCombo(VPR_ST_AdvancedMode)]
-        [CustomComboInfo("Noxious Gnash", "Adds Noxious Gnash if it is not present on current target, or is about to expire.", VPR.JobID)]
+        [CustomComboInfo("Noxious Gnash", "Adds Noxious Gnash if it is not present on current target, is below chosen value \n Or when it prepares for Double ReAwaken.", VPR.JobID)]
         VPR_ST_NoxiousGnash = 30003,
 
         #region Cooldowns ST
@@ -3696,10 +3724,12 @@ namespace XIVSlothCombo.Combos
         VPR_ST_UncoiledFuryCombo = 30010,
 
         [ParentCombo(VPR_ST_AdvancedMode)]
+        [ConflictingCombos(VPR_ReawakenLegacy)]
         [CustomComboInfo("Reawaken", "Adds Reawaken to the rotation.", VPR.JobID)]
         VPR_ST_Reawaken = 30011,
 
         [ParentCombo(VPR_ST_AdvancedMode)]
+        [ConflictingCombos(VPR_ReawakenLegacy)]
         [CustomComboInfo("Reawaken Combo", "Adds Generation and Legacy to the rotation.", VPR.JobID)]
         VPR_ST_ReawakenCombo = 30012,
 
@@ -3738,7 +3768,7 @@ namespace XIVSlothCombo.Combos
         VPR_AoE_AdvancedMode = 30101,
 
         [ParentCombo(VPR_AoE_AdvancedMode)]
-        [CustomComboInfo("Noxious Gnash", "Adds Noxious Gnash if it is not present on current target, or is about to expire.", VPR.JobID)]
+        [CustomComboInfo("Noxious Gnash", "Adds Noxious Gnash if it is not present on current target or is below 20 secs.", VPR.JobID)]
         VPR_AoE_NoxiousGnash = 30102,
 
         #region Cooldowns AoE
@@ -3774,10 +3804,12 @@ namespace XIVSlothCombo.Combos
         VPR_AoE_UncoiledFuryCombo = 30109,
 
         [ParentCombo(VPR_AoE_AdvancedMode)]
+        [ConflictingCombos(VPR_ReawakenLegacy)]
         [CustomComboInfo("Reawaken", "Adds Reawaken to the rotation.", VPR.JobID)]
         VPR_AoE_Reawaken = 30110,
 
         [ParentCombo(VPR_AoE_AdvancedMode)]
+        [ConflictingCombos(VPR_ReawakenLegacy)]
         [CustomComboInfo("Reawaken Combo", "Adds Generation and Legacy to the rotation.", VPR.JobID)]
         VPR_AoE_ReawakenCombo = 30112,
 
@@ -3799,7 +3831,8 @@ namespace XIVSlothCombo.Combos
         [CustomComboInfo("Uncoiled - Twins", "Replaces Uncoiled Fury with Uncoiled Twinfang and Uncoiled Twinblood.", VPR.JobID)]
         VPR_UncoiledTwins = 30202,
 
-        [ReplaceSkill(VPR.Reawaken, VPR.DreadFangs)]
+        [ReplaceSkill(VPR.Reawaken, VPR.SteelFangs)]
+        [ConflictingCombos(VPR_ST_Reawaken, VPR_ST_ReawakenCombo, VPR_AoE_Reawaken, VPR_AoE_ReawakenCombo)]
         [CustomComboInfo("Reawaken - Generation", "Replaces Option with the Generations.", VPR.JobID)]
         VPR_ReawakenLegacy = 30203,
 

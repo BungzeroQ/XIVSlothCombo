@@ -104,6 +104,9 @@ namespace XIVSlothCombo.Combos.PvE
                 var mpRemaining = PluginConfiguration.GetCustomIntValue(Config.DRK_ST_ManaSpenderPooling);
                 var hpRemaining = PluginConfiguration.GetCustomIntValue(Config.DRK_ST_LivingDeadThreshold);
 
+                if (ActionReady(All.Interject) && CanInterruptEnemy() && CanDelayedWeave(actionID))
+                    return All.Interject;
+
                 // Variant Cure - Heal: Priority to save your life
                 if (IsEnabled(CustomComboPreset.DRK_Variant_Cure)
                     && IsEnabled(Variant.VariantCure)
@@ -148,20 +151,22 @@ namespace XIVSlothCombo.Combos.PvE
 
                     //Mana Features
                     if (IsEnabled(CustomComboPreset.DRK_ST_ManaOvercap)
-                        && ((CombatEngageDuration().TotalSeconds > 4 && CombatEngageDuration().TotalSeconds < 10 && gauge.DarksideTimeRemaining == 0) // Initial Darkside upping
+                     && ((CombatEngageDuration().TotalSeconds > 3 // todo: we want this immediately now
+                             && CombatEngageDuration().TotalSeconds < 10
+                             && gauge.DarksideTimeRemaining == 0) // Initial Darkside upping
                             || CombatEngageDuration().TotalSeconds >= 10))
                     {
                         // Spend mana to limit when not near even minute burst windows
                         if (IsEnabled(CustomComboPreset.DRK_ST_ManaSpenderPooling)
-                            && GetCooldownRemainingTime(LivingShadow) >= 45
-                            && LocalPlayer.CurrentMp > (mpRemaining + 3000)
+                            && (GetCooldownRemainingTime(LivingShadow) > 40 || !LevelChecked(LivingShadow) && LevelChecked(BloodWeapon) && GetCooldownRemainingTime(BloodWeapon) > 40 || !LevelChecked(BloodWeapon))
+                            && (LocalPlayer.CurrentMp > (mpRemaining + 3000) || gauge.HasDarkArts)
                             && LevelChecked(EdgeOfDarkness)
                             && CanDelayedWeave(actionID))
                             return OriginalHook(EdgeOfDarkness);
 
                         // Keep Darkside up, spend Dark Arts
                         if (LocalPlayer.CurrentMp > 8500
-                            || (gauge.DarksideTimeRemaining < 10000 && LocalPlayer.CurrentMp > (mpRemaining + 3000)))
+                            || (gauge.DarksideTimeRemaining < 10000 && (LocalPlayer.CurrentMp > (mpRemaining + 3000))))
                         {
                             // Return Edge of Darkness if available
                             if (LevelChecked(EdgeOfDarkness))
@@ -249,13 +254,13 @@ namespace XIVSlothCombo.Combos.PvE
                         return Bloodspiller;
                 }
 
-                // Spend Dark Arts
-                if (IsEnabled(CustomComboPreset.DRK_ST_ManaOvercap)
-                    && (CanWeave(actionID) || CanDelayedWeave(actionID))
-                    && gauge.HasDarkArts
-                    && LevelChecked(EdgeOfDarkness)
-                    && CombatEngageDuration().TotalSeconds >= 25)
-                    return OriginalHook(EdgeOfDarkness);
+                //// Spend Dark Arts
+                //if (IsEnabled(CustomComboPreset.DRK_ST_ManaOvercap)
+                //    && (CanWeave(actionID) || CanDelayedWeave(actionID))
+                //    && gauge.HasDarkArts
+                //    && LevelChecked(EdgeOfDarkness)
+                //    && CombatEngageDuration().TotalSeconds >= 25)
+                //    return OriginalHook(EdgeOfDarkness);
 
                 // 1-2-3 combo
                 if (!(comboTime > 0)) return HardSlash;
