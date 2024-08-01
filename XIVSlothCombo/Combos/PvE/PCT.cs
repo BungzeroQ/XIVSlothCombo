@@ -95,7 +95,7 @@ namespace XIVSlothCombo.Combos.PvE
                     if (LevelChecked(CreatureMotif)
                         && !gauge.CreatureMotifDrawn
                         && !HasEffect(Buffs.HammerTime)
-                        && (HasCharges(LivingMuse) || GetCooldownChargeRemainingTime(LivingMuse) <= GetActionCastTime(OriginalHook(CreatureMotif)))
+                        && (HasCharges(LivingMuse) || GetCooldownChargeRemainingTime(LivingMuse) <= GetActionCastTime(OriginalHook(CreatureMotif))))
                     {
                         if (LevelChecked(All.Swiftcast) && IsMoving && InCombat() && canWeave && IsOffCooldown(All.Swiftcast))
                             return All.Swiftcast;
