@@ -345,7 +345,7 @@ namespace XIVSlothCombo.Combos.PvE
                             //StarDiver Feature
                             if (IsEnabled(CustomComboPreset.DRG_ST_Stardiver) &&
                                 AnimationLock.CanDRGWeave(Stardiver) &&
-                                //hasEffectDot &&
+                                hasEffectDot &&
                                 ActionReady(Stardiver) && gauge.IsLOTDActive &&
                                 HasEffect(Buffs.LanceCharge) &&
                                 (!IsEnabled(CustomComboPreset.DRG_ST_Stardiver_Movement) ||

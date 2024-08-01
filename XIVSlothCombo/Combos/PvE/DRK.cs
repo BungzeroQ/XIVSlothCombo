@@ -158,22 +158,21 @@ namespace XIVSlothCombo.Combos.PvE
                     {
                         // Spend mana to limit when not near even minute burst windows
                         if (IsEnabled(CustomComboPreset.DRK_ST_ManaSpenderPooling)
-                            && (GetCooldownRemainingTime(LivingShadow) > 40 || !LevelChecked(LivingShadow) && LevelChecked(BloodWeapon) && GetCooldownRemainingTime(BloodWeapon) > 40 || !LevelChecked(BloodWeapon))
-                            && (LocalPlayer.CurrentMp > (mpRemaining + 3000) || gauge.HasDarkArts)
+                            && ((LocalPlayer.CurrentMp > (mpRemaining + 3000)) || gauge.HasDarkArts)
                             && LevelChecked(EdgeOfDarkness)
                             && CanDelayedWeave(actionID))
-                            return OriginalHook(EdgeOfDarkness);
-
-                        // Keep Darkside up, spend Dark Arts
-                        if (LocalPlayer.CurrentMp > 8500
-                            || (gauge.DarksideTimeRemaining < 10000 && (LocalPlayer.CurrentMp > (mpRemaining + 3000))))
                         {
-                            // Return Edge of Darkness if available
-                            if (LevelChecked(EdgeOfDarkness))
+                            if (LevelChecked(LivingShadow) 
+                                && ((GetCooldownRemainingTime(LivingShadow) > 90) 
+                                    || (GetCooldownRemainingTime(LivingShadow) <= 90 && (GetCooldownRemainingTime(LivingShadow) >= 40 && gauge.DarksideTimeRemaining < 30000))))
                                 return OriginalHook(EdgeOfDarkness);
-                            if (LevelChecked(FloodOfDarkness)
-                                && !LevelChecked(EdgeOfDarkness))
-                                return FloodOfDarkness;
+
+                            if (!LevelChecked(LivingShadow) && LevelChecked(BloodWeapon) 
+                                && GetCooldownRemainingTime(OriginalHook(BloodWeapon)) > 20)
+                                return OriginalHook(EdgeOfDarkness);
+
+                            if (!LevelChecked(BloodWeapon))
+                                return OriginalHook(EdgeOfDarkness);
                         }
                     }
 
@@ -191,7 +190,8 @@ namespace XIVSlothCombo.Combos.PvE
                         // Delirium
                         if (IsEnabled(CustomComboPreset.DRK_ST_Delirium)
                             && IsOffCooldown(BloodWeapon)
-                            && LevelChecked(BloodWeapon))
+                            && LevelChecked(BloodWeapon)
+                            && GetTargetHPPercent() > hpRemaining)
                             return OriginalHook(Delirium);
 
                         if (IsEnabled(CustomComboPreset.DRK_ST_CDs))
@@ -203,27 +203,31 @@ namespace XIVSlothCombo.Combos.PvE
                                 if (!HasEffect(Buffs.SaltedEarth)
                                     && ActionReady(SaltedEarth))
                                     return SaltedEarth;
-                                //Cast Salt and Darkness
-                                if (HasEffect(Buffs.SaltedEarth)
-                                 && GetBuffRemainingTime(Buffs.SaltedEarth) < 9
-                                 && ActionReady(SaltAndDarkness))
-                                    return OriginalHook(SaltAndDarkness);
                             }
+
+                            //Cast Salt and Darkness
+                            if (HasEffect(Buffs.SaltedEarth)
+                             && GetBuffRemainingTime(Buffs.SaltedEarth) < 9
+                             && ActionReady(SaltAndDarkness))
+                                return OriginalHook(SaltAndDarkness);
 
                             // Shadowbringer
                             // todo: simplify this to make it easier to read
                             if (LevelChecked(Shadowbringer)
-                                && IsEnabled(CustomComboPreset.DRK_ST_CDs_Shadowbringer))
+                                && IsEnabled(CustomComboPreset.DRK_ST_CDs_Shadowbringer)
+                                && CanDelayedWeave(actionID))
                             {
                                 if ((GetRemainingCharges(Shadowbringer) > 0 && IsNotEnabled(CustomComboPreset.DRK_ST_CDs_ShadowbringerBurst)) || // Dump
-                                    (IsEnabled(CustomComboPreset.DRK_ST_CDs_ShadowbringerBurst) && GetRemainingCharges(Shadowbringer) > 0 && gauge.ShadowTimeRemaining > 1 && IsOnCooldown(Delirium))) // Burst
+                                    (IsEnabled(CustomComboPreset.DRK_ST_CDs_ShadowbringerBurst) && GetRemainingCharges(Shadowbringer) > 0 && gauge.ShadowTimeRemaining > 1 && GetCooldownRemainingTime(Delirium) <= 57)) // Burst
                                     return Shadowbringer;
                             }
 
                             // Carve and Spit
                             if (IsEnabled(CustomComboPreset.DRK_ST_CDs_CarveAndSpit)
                                 && IsOffCooldown(CarveAndSpit)
-                                && LevelChecked(CarveAndSpit))
+                                && LevelChecked(CarveAndSpit)
+                                && GetCooldownRemainingTime(Delirium) <= 55
+                                && CanWeave(actionID))
                                 return CarveAndSpit;
                         }
                     }
@@ -247,10 +251,10 @@ namespace XIVSlothCombo.Combos.PvE
 
                     //Blood management before Delirium
                     if (IsEnabled(CustomComboPreset.DRK_ST_Delirium)
-                        && (
-                            (gauge.Blood >= 60 && GetCooldownRemainingTime(Delirium) is > 0 and < 3)
-                            || (gauge.Blood >= 50 && GetCooldownRemainingTime(Delirium) > 37)
-                            ))
+                        && gauge.Blood >= 50  
+                        && GetCooldownRemainingTime(Delirium) > 40
+                        && (WasLastWeaponskill(Torcleaver) || !LevelChecked(Torcleaver) || WasLastWeaponskill(Bloodspiller)) 
+                        && ((LevelChecked(LivingShadow) && GetCooldownRemainingTime(LivingShadow) > 40) || !LevelChecked(LivingShadow)))
                         return Bloodspiller;
                 }
 
@@ -270,7 +274,7 @@ namespace XIVSlothCombo.Combos.PvE
                 {
                     // Blood management
                     if (IsEnabled(CustomComboPreset.DRK_ST_BloodOvercap)
-                        && LevelChecked(Bloodspiller) && gauge.Blood >= 90)
+                        && LevelChecked(Bloodspiller) && gauge.Blood >= 90 && ((LevelChecked(LivingShadow) && GetCooldownRemainingTime(LivingShadow) > 40) || !LevelChecked(LivingShadow)))
                         return Bloodspiller;
 
                     return Souleater;
@@ -292,6 +296,9 @@ namespace XIVSlothCombo.Combos.PvE
 
                 var gauge = GetJobGauge<DRKGauge>();
                 var hpRemaining = PluginConfiguration.GetCustomIntValue(Config.DRK_AoE_LivingDeadThreshold);
+
+                if (ActionReady(All.Interject) && CanInterruptEnemy() && CanDelayedWeave(actionID))
+                    return All.Interject;
 
                 // Variant Cure - Heal: Priority to save your life
                 if (IsEnabled(CustomComboPreset.DRK_Variant_Cure)

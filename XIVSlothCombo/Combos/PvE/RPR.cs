@@ -312,7 +312,7 @@ namespace XIVSlothCombo.Combos.PvE
                     }
 
                     if (IsEnabled(CustomComboPreset.RPR_ST_ArcaneCircle) &&
-                        ActionReady(ArcaneCircle) && CanWeave(actionID) && gauge.Shroud >= 50 && TargetHasEffect(Debuffs.DeathsDesign))
+                        ActionReady(ArcaneCircle) && CanWeave(actionID) && gauge.Soul >= 50 && TargetHasEffect(Debuffs.DeathsDesign))
                         return ArcaneCircle;
 
                     if (IsEnabled(CustomComboPreset.RPR_ST_SoD) &&
