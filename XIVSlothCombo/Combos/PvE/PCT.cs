@@ -1,6 +1,4 @@
 ﻿using Dalamud.Game.ClientState.JobGauge.Types;
-using ECommons.Logging;
-using System;
 using XIVSlothCombo.CustomComboNS;
 using XIVSlothCombo.CustomComboNS.Functions;
 using XIVSlothCombo.Extensions;
@@ -44,8 +42,6 @@ namespace XIVSlothCombo.Combos.PvE
         public static class Buffs
         {
             public const ushort
-                Aetherhues = 3675,
-                AetherhuesII = 3676,
                 SubtractivePalette = 3674,
                 RainbowBright = 3679,
                 HammerTime = 3680,
@@ -65,9 +61,7 @@ namespace XIVSlothCombo.Combos.PvE
         public static class Config
         {
             public static UserInt
-                CombinedAetherhueChoices = new("CombinedAetherhueChoices"),
-                PCT_ST_Lucid = new("PCT_ST_Lucid", 7500),
-                PCT_AoE_Lucid = new("PCT_AoE_Lucid", 7500);
+                CombinedAetherhueChoices = new("CombinedAetherhueChoices");
 
             public static UserBool
                 CombinedMotifsMog = new("CombinedMotifsMog"),
@@ -87,115 +81,84 @@ namespace XIVSlothCombo.Combos.PvE
                     var gauge = GetJobGauge<PCTGauge>();
                     bool canWeave = HasEffect(Buffs.SubtractivePalette) ? CanSpellWeave(OriginalHook(BlizzardinCyan)) : CanSpellWeave(OriginalHook(FireInRed));
 
-                    //new
-                    if (ActionReady(All.LucidDreaming) && LocalPlayer.CurrentMp <= 1000)
-                        return All.LucidDreaming;
+                    if (HasEffect(Buffs.Starstruck))
+                        return OriginalHook(StarPrism);
 
-                    // CreatureMotif
-                    if (LevelChecked(CreatureMotif)
-                        && !gauge.CreatureMotifDrawn
-                        && !HasEffect(Buffs.HammerTime)
-                        && (HasCharges(LivingMuse) || GetCooldownChargeRemainingTime(LivingMuse) <= GetActionCastTime(OriginalHook(CreatureMotif))))
+                    if (HasEffect(Buffs.RainbowBright))
+                        return OriginalHook(RainbowDrip);
+
+                    if (IsMoving)
                     {
-                        if (LevelChecked(All.Swiftcast) && IsMoving && InCombat() && canWeave && IsOffCooldown(All.Swiftcast))
-                            return All.Swiftcast;
-
-                        return OriginalHook(CreatureMotif); //Pom Motif, Wing Motif
-                    }
-
-                    // WeaponMotif
-                    if (LevelChecked(WeaponMotif)
-                        && !gauge.WeaponMotifDrawn
-                        && !HasEffect(Buffs.HammerTime)
-                        && (HasCharges(SteelMuse) || GetCooldownChargeRemainingTime(SteelMuse) <= GetActionCastTime(OriginalHook(WeaponMotif))))
-                    {
-                        if (LevelChecked(All.Swiftcast) && IsMoving && InCombat() && canWeave && IsOffCooldown(All.Swiftcast))
-                            return All.Swiftcast;
-
-                        return OriginalHook(WeaponMotif); // Hammer Motif
-                    }
-
-                    // WeaponMotif
-                    if (LevelChecked(LandscapeMotif)
-                        && !gauge.WeaponMotifDrawn
-                        && !HasEffect(Buffs.HammerTime)
-                        && (HasCharges(SteelMuse) || GetCooldownChargeRemainingTime(SteelMuse) <= GetActionCastTime(OriginalHook(WeaponMotif))))
-                    {
-                        if (LevelChecked(All.Swiftcast) && IsMoving && InCombat() && canWeave && IsOffCooldown(All.Swiftcast))
-                            return All.Swiftcast;
-
-                        return OriginalHook(WeaponMotif); // Hammer Motif
-                    }
-
-                    // Landing Motif
-                    if (LevelChecked(LandscapeMotif)
-                        && !gauge.LandscapeMotifDrawn
-                        && GetCooldownRemainingTime(ScenicMuse) <= GetActionCastTime(OriginalHook(LandscapeMotif)))
-                    {
-                        if (LevelChecked(All.Swiftcast) && IsMoving && InCombat() && canWeave && IsOffCooldown(All.Swiftcast))
-                            return All.Swiftcast;
-
-                        return OriginalHook(LandscapeMotif); // Starry Sky Motif
-                    }
-
-                    if (InCombat())
-                    {
-                        //oGCD
-                        if (canWeave)
-                        {
-                            if (HasEffect(Buffs.SubtractivePalette))
-                                return OriginalHook(BlizzardinCyan);
-
-                            if ((gauge.PalleteGauge >= 50 || (HasEffect(Buffs.StarryMuse) && HasEffect(Buffs.SubtractiveSpectrum))) && !HasEffect(Buffs.SubtractivePalette))
-                                return OriginalHook(SubtractivePalette);
-
-                            if (gauge.LandscapeMotifDrawn && gauge.WeaponMotifDrawn && (gauge.MooglePortraitReady || gauge.MadeenPortraitReady) && IsOffCooldown(MogoftheAges) && IsOffCooldown(ScenicMuse))
-                                return OriginalHook(ScenicMuse);
-
-                            if (LevelChecked(MogoftheAges) && (gauge.MooglePortraitReady || gauge.MadeenPortraitReady) && IsOffCooldown(OriginalHook(MogoftheAges)) && (GetCooldown(LivingMuse).CooldownRemaining < GetCooldown(ScenicMuse).CooldownRemaining || !LevelChecked(ScenicMuse)))
-                                return OriginalHook(MogoftheAges);
-
-                            if ((gauge.CreatureMotifDrawn && HasCharges(OriginalHook(LivingMuse))) || !LevelChecked(LivingMuse))
-                                return OriginalHook(LivingMuse);
-
-                            if (!HasEffect(Buffs.HammerTime) && gauge.WeaponMotifDrawn && HasCharges(OriginalHook(SteelMuse)) && GetBuffRemainingTime(Buffs.StarryMuse) >= 15)
-                                return OriginalHook(SteelMuse);
-
-                            if (HasEffect(Buffs.SubtractiveSpectrum) && !HasEffect(Buffs.SubtractivePalette))
-                                return OriginalHook(SubtractivePalette);
-                        }
-
-                        //GCD
-
-                        if ((HasEffect(Buffs.StarryMuse) || !LevelChecked(ScenicMuse)) && HasEffect(Buffs.MonochromeTones))
-                            return OriginalHook(CometinBlack);
-
-                        if (HasEffect(Buffs.SubtractivePalette))
-                            return OriginalHook(BlizzardinCyan);
-
-                        if (HasEffect(Buffs.Starstruck))
-                            return OriginalHook(StarPrism);
-
-                        if ((GetCooldownRemainingTime(Buffs.StarryMuse) > 40 || !LevelChecked(ScenicMuse)) && HasEffect(Buffs.Starstruck))
-                            return OriginalHook(HammerStamp);
-
-                        if (HasEffect(Buffs.RainbowBright))
-                            return OriginalHook(RainbowDrip);
-
-                        if (IsMoving && gauge.Paint > 0)
+                        if (gauge.Paint > 0)
                         {
                             if (HasEffect(Buffs.MonochromeTones))
                                 return OriginalHook(CometinBlack);
 
                             return OriginalHook(HolyInWhite);
                         }
-
-                        return LevelChecked(RainbowDrip) ? OriginalHook(RainbowDrip) : OriginalHook(actionID);
                     }
 
-                    return OriginalHook(actionID);
-                }
 
+                    if (HasEffect(Buffs.StarryMuse))
+                    {
+                        if (HasEffect(Buffs.SubtractiveSpectrum) && !HasEffect(Buffs.SubtractivePalette) && canWeave)
+                            return OriginalHook(SubtractivePalette);
+
+                        if (MogoftheAges.LevelChecked() && (gauge.MooglePortraitReady || gauge.MadeenPortraitReady) && IsOffCooldown(OriginalHook(MogoftheAges)))
+                            return OriginalHook(MogoftheAges);
+
+                        if (!HasEffect(Buffs.HammerTime) && gauge.WeaponMotifDrawn && HasCharges(OriginalHook(SteelMuse)) && GetBuffRemainingTime(Buffs.StarryMuse) >= 15f)
+                            return OriginalHook(SteelMuse);
+
+                        if (gauge.CreatureMotifDrawn && HasCharges(OriginalHook(LivingMuse)) && canWeave)
+                            return OriginalHook(LivingMuse);
+
+                        if (HasEffect(Buffs.HammerTime))
+                            return OriginalHook(HammerStamp);
+
+                        if (HasEffect(Buffs.SubtractivePalette))
+                            return OriginalHook(BlizzardinCyan);
+
+                        return actionID;
+                    }
+
+                    if (gauge.PalleteGauge >= 50 && !HasEffect(Buffs.SubtractivePalette) && canWeave)
+                        return OriginalHook(SubtractivePalette);
+
+                    if (HasEffect(Buffs.HammerTime) && !canWeave)
+                        return OriginalHook(HammerStamp);
+
+                    if (InCombat())
+                    {
+                        if (gauge.LandscapeMotifDrawn && gauge.WeaponMotifDrawn && (gauge.MooglePortraitReady || gauge.MadeenPortraitReady) && IsOffCooldown(MogoftheAges) && IsOffCooldown(ScenicMuse) && canWeave)
+                            return OriginalHook(ScenicMuse);
+
+                        if (MogoftheAges.LevelChecked() && (gauge.MooglePortraitReady || gauge.MadeenPortraitReady) && IsOffCooldown(OriginalHook(MogoftheAges)) && (GetCooldown(LivingMuse).CooldownRemaining < GetCooldown(ScenicMuse).CooldownRemaining || !ScenicMuse.LevelChecked()) && canWeave)
+                            return OriginalHook(MogoftheAges);
+
+                        if (!HasEffect(Buffs.HammerTime) && gauge.WeaponMotifDrawn && HasCharges(OriginalHook(SteelMuse)) && (GetCooldown(SteelMuse).CooldownRemaining < GetCooldown(ScenicMuse).CooldownRemaining || GetRemainingCharges(SteelMuse) == GetMaxCharges(SteelMuse) || !ScenicMuse.LevelChecked()) && canWeave)
+                            return OriginalHook(SteelMuse);
+
+                        if (gauge.CreatureMotifDrawn && (!(gauge.MooglePortraitReady || gauge.MadeenPortraitReady) || GetCooldown(LivingMuse).CooldownRemaining > GetCooldown(ScenicMuse).CooldownRemaining || GetRemainingCharges(LivingMuse) == GetMaxCharges(LivingMuse) || !ScenicMuse.LevelChecked()) && HasCharges(OriginalHook(LivingMuse)) && canWeave)
+                            return OriginalHook(LivingMuse);
+
+                        if (LandscapeMotif.LevelChecked() && !gauge.LandscapeMotifDrawn && GetCooldownRemainingTime(ScenicMuse) <= GetActionCastTime(OriginalHook(LandscapeMotif)))
+                            return OriginalHook(LandscapeMotif);
+
+                        if (CreatureMotif.LevelChecked() && !gauge.CreatureMotifDrawn && (HasCharges(LivingMuse) || GetCooldownChargeRemainingTime(LivingMuse) <= GetActionCastTime(OriginalHook(CreatureMotif))))
+                            return OriginalHook(CreatureMotif);
+
+                        if (WeaponMotif.LevelChecked() && !HasEffect(Buffs.HammerTime) && !gauge.WeaponMotifDrawn && (HasCharges(SteelMuse) || GetCooldownChargeRemainingTime(SteelMuse) <= GetActionCastTime(OriginalHook(WeaponMotif))))
+                            return OriginalHook(WeaponMotif);
+
+                    }
+                    if (gauge.Paint > 0 && HasEffect(Buffs.MonochromeTones))
+                        return OriginalHook(CometinBlack);
+
+                    if (HasEffect(Buffs.SubtractivePalette))
+                        return OriginalHook(BlizzardinCyan);
+
+                }
                 return actionID;
             }
         }
@@ -295,85 +258,22 @@ namespace XIVSlothCombo.Combos.PvE
             }
         }
 
-        internal class PCT_ST_Adv : CustomCombo
+        internal class CombinedAetherhues : CustomCombo
         {
-            protected internal override CustomComboPreset Preset { get; } = CustomComboPreset.PCT_ST_Adv;
+            protected internal override CustomComboPreset Preset { get; } = CustomComboPreset.CombinedAetherhues;
 
             protected override uint Invoke(uint actionID, uint lastComboActionID, float comboTime, byte level)
             {
-                var gauge = GetJobGauge<PCTGauge>();
+                int choice = Config.CombinedAetherhueChoices;
 
-                if (actionID is FireInRed)
+                if (actionID == FireInRed && choice is 0 or 1)
                 {
-                    if (IsEnabled(CustomComboPreset.PCT_ST_Lucid) && ActionReady(All.LucidDreaming) && LocalPlayer.CurrentMp <= 1000)
-                        return All.LucidDreaming;
-
-                    if (IsEnabled(CustomComboPreset.PCT_ST_Subtractive_OP) && gauge.PalleteGauge == 100 && ActionReady(SubtractivePalette))
-                    {
-                        if (HasEffect(Buffs.MonochromeTones))
-                        {
-                            return OriginalHook(CometinBlack);
-                        }
-                        if (CanSpellWeave(actionID))
-                        {
-                            return SubtractivePalette;
-                        }
-                    }
-
-                    if (IsEnabled(CustomComboPreset.PCT_ST_Comet_OP) && gauge.Paint == 5 && (LevelChecked(HolyInWhite) || LevelChecked(CometinBlack)))
-                    {
-                        if (HasEffect(Buffs.MonochromeTones))
-                        {
-                            return OriginalHook(CometinBlack);
-                        }
-                        return OriginalHook(HolyInWhite);
-                    }
-
-                    if (IsEnabled(CustomComboPreset.PCT_ST_Lucid) && ActionReady(All.LucidDreaming) && CanSpellWeave(actionID) && LocalPlayer.CurrentMp <= Config.PCT_ST_Lucid)
-                        return All.LucidDreaming;
-
                     if (HasEffect(Buffs.SubtractivePalette))
                         return OriginalHook(BlizzardinCyan);
                 }
 
-                return actionID;
-            }
-        }
-
-        internal class PCT_AoE_Adv : CustomCombo
-        {
-            protected internal override CustomComboPreset Preset { get; } = CustomComboPreset.PCT_AoE_Adv;
-
-            protected override uint Invoke(uint actionID, uint lastComboActionID, float comboTime, byte level)
-            {
-                var gauge = GetJobGauge<PCTGauge>();
-
-                if (actionID is FireIIinRed)
+                if (actionID == FireIIinRed && choice is 0 or 2)
                 {
-                    if (IsEnabled(CustomComboPreset.PCT_AoE_Lucid) && ActionReady(All.LucidDreaming) && LocalPlayer.CurrentMp <= 1000)
-                        return All.LucidDreaming;
-
-                    if (IsEnabled(CustomComboPreset.PCT_AoE_Subtractive_OP) && gauge.PalleteGauge == 100 && CanSpellWeave(actionID) && ActionReady(SubtractivePalette))
-                    {
-                        if (HasEffect(Buffs.MonochromeTones))
-                        {
-                            return OriginalHook(CometinBlack);
-                        }
-                        return SubtractivePalette;
-                    }
-
-                    if (IsEnabled(CustomComboPreset.PCT_AoE_Comet_OP) && gauge.Paint == 5 && (LevelChecked(HolyInWhite) || LevelChecked(CometinBlack)))
-                    {
-                        if (HasEffect(Buffs.MonochromeTones))
-                        {
-                            return OriginalHook(CometinBlack);
-                        }
-                        return OriginalHook(HolyInWhite);
-                    }
-
-                    if (IsEnabled(CustomComboPreset.PCT_AoE_Lucid) && ActionReady(All.LucidDreaming) && CanSpellWeave(actionID) && LocalPlayer.CurrentMp <= Config.PCT_AoE_Lucid)
-                        return All.LucidDreaming;
-
                     if (HasEffect(Buffs.SubtractivePalette))
                         return OriginalHook(BlizzardIIinCyan);
                 }
