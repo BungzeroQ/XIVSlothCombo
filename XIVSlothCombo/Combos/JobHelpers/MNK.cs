@@ -133,63 +133,63 @@ namespace XIVSlothCombo.Combos.JobHelpers
                     return true;
                 }
 
-                if (CustomComboFunctions.WasLastAction(PerfectBalance) && OpenerStep == 1) OpenerStep++;
+                if ((CustomComboFunctions.WasLastAction(PerfectBalance) || CustomComboFunctions.HasEffect(Buffs.PerfectBalance)) && OpenerStep == 1) OpenerStep++;
                 else if (OpenerStep == 1) actionID = PerfectBalance;
 
                 if (CustomComboFunctions.WasLastAction(TheForbiddenChakra) && OpenerStep == 2) OpenerStep++;
                 else if (OpenerStep == 2) actionID = TheForbiddenChakra;
 
-                if (CustomComboFunctions.WasLastAction(TwinSnakes) && OpenerStep == 3) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(TwinSnakes) && OpenerStep == 3) OpenerStep++;
                 else if (OpenerStep == 3) actionID = TwinSnakes;
 
-                if (CustomComboFunctions.WasLastAction(Demolish) && OpenerStep == 4) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(Demolish) && OpenerStep == 4) OpenerStep++;
                 else if (OpenerStep == 4) actionID = Demolish;
 
-                if (CustomComboFunctions.WasLastAction(Brotherhood) && OpenerStep == 5) OpenerStep++;
+                if (CustomComboFunctions.WasLastAbility(Brotherhood) && CustomComboFunctions.HasEffect(Buffs.Brotherhood) && OpenerStep == 5) OpenerStep++;
                 else if (OpenerStep == 5) actionID = Brotherhood;
 
-                if (CustomComboFunctions.WasLastAction(RiddleOfFire) && OpenerStep == 6) OpenerStep++;
+                if (CustomComboFunctions.WasLastAction(RiddleOfFire) && CustomComboFunctions.HasEffect(Buffs.RiddleOfFire) && OpenerStep == 6) OpenerStep++;
                 else if (OpenerStep == 6) actionID = RiddleOfFire;
 
                 // Pot
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 7) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 7) OpenerStep++;
                 else if (OpenerStep == 7) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(RiddleOfWind) && OpenerStep == 8) OpenerStep++;
+                if (CustomComboFunctions.WasLastAction(RiddleOfWind) && CustomComboFunctions.HasEffect(Buffs.RiddleOfWind) && OpenerStep == 8) OpenerStep++;
                 else if (OpenerStep == 8) actionID = RiddleOfWind;
 
-                if (CustomComboFunctions.WasLastAction(RisingPhoenix) && OpenerStep == 9) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(RisingPhoenix) && OpenerStep == 9) OpenerStep++;
                 else if (OpenerStep == 9) actionID = RisingPhoenix;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 10) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 10) OpenerStep++;
                 else if (OpenerStep == 10) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(FiresReply) && OpenerStep == 11) OpenerStep++;
+                if ((CustomComboFunctions.WasLastWeaponskill(FiresReply) || !CustomComboFunctions.HasEffect(Buffs.FiresRumination)) && OpenerStep == 11) OpenerStep++;
                 else if (OpenerStep == 11) actionID = FiresReply;
 
-                if (CustomComboFunctions.WasLastAction(WindsReply) && OpenerStep == 12) OpenerStep++;
+                if ((CustomComboFunctions.WasLastWeaponskill(WindsReply) || !CustomComboFunctions.HasEffect(Buffs.WindsRumination)) && OpenerStep == 12) OpenerStep++;
                 else if (OpenerStep == 12) actionID = WindsReply;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 13) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 13) OpenerStep++;
                 else if (OpenerStep == 13) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(PerfectBalance) && OpenerStep == 14) OpenerStep++;
+                if ((CustomComboFunctions.WasLastAction(PerfectBalance) || CustomComboFunctions.HasEffect(Buffs.PerfectBalance)) && OpenerStep == 14) OpenerStep++;
                 else if (OpenerStep == 14) actionID = PerfectBalance;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 15) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 15) OpenerStep++;
                 else if (OpenerStep == 15) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 16) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 16) OpenerStep++;
                 else if (OpenerStep == 16) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 17) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 17) OpenerStep++;
                 else if (OpenerStep == 17) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(ElixirBurst) && OpenerStep == 18) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(ElixirBurst) && OpenerStep == 18) OpenerStep++;
                 else if (OpenerStep == 18) actionID = ElixirBurst;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 19) CurrentState = OpenerState.OpenerFinished;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 19) CurrentState = OpenerState.OpenerFinished;
                 else if (OpenerStep == 19) actionID = LeapingOpo;
 
                 if (ActionWatching.TimeSinceLastAction.TotalSeconds >= 5)
@@ -225,63 +225,63 @@ namespace XIVSlothCombo.Combos.JobHelpers
                     return true;
                 }
 
-                if (CustomComboFunctions.WasLastAction(PerfectBalance) && OpenerStep == 1) OpenerStep++;
+                if ((CustomComboFunctions.WasLastAction(PerfectBalance) || CustomComboFunctions.HasEffect(Buffs.PerfectBalance)) && OpenerStep == 1) OpenerStep++;
                 else if (OpenerStep == 1) actionID = PerfectBalance;
 
                 if (CustomComboFunctions.WasLastAction(TheForbiddenChakra) && OpenerStep == 2) OpenerStep++;
                 else if (OpenerStep == 2) actionID = TheForbiddenChakra;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 3) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 3) OpenerStep++;
                 else if (OpenerStep == 3) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 4) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 4) OpenerStep++;
                 else if (OpenerStep == 4) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(Brotherhood) && OpenerStep == 5) OpenerStep++;
+                if (CustomComboFunctions.WasLastAbility(Brotherhood) && CustomComboFunctions.HasEffect(Buffs.Brotherhood) && OpenerStep == 5) OpenerStep++;
                 else if (OpenerStep == 5) actionID = Brotherhood;
 
-                if (CustomComboFunctions.WasLastAction(RiddleOfFire) && OpenerStep == 6) OpenerStep++;
+                if (CustomComboFunctions.WasLastAction(RiddleOfFire) && CustomComboFunctions.HasEffect(Buffs.RiddleOfFire) && OpenerStep == 6) OpenerStep++;
                 else if (OpenerStep == 6) actionID = RiddleOfFire;
 
                 // Pot
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 7) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 7) OpenerStep++;
                 else if (OpenerStep == 7) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(RiddleOfWind) && OpenerStep == 8) OpenerStep++;
+                if (CustomComboFunctions.WasLastAction(RiddleOfWind) && CustomComboFunctions.HasEffect(Buffs.RiddleOfWind) && OpenerStep == 8) OpenerStep++;
                 else if (OpenerStep == 8) actionID = RiddleOfWind;
 
-                if (CustomComboFunctions.WasLastAction(ElixirBurst) && OpenerStep == 9) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(ElixirBurst) && OpenerStep == 9) OpenerStep++;
                 else if (OpenerStep == 9) actionID = ElixirBurst;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 10) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 10) OpenerStep++;
                 else if (OpenerStep == 10) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(FiresReply) && OpenerStep == 11) OpenerStep++;
+                if ((CustomComboFunctions.WasLastWeaponskill(FiresReply) || !CustomComboFunctions.HasEffect(Buffs.FiresRumination)) && OpenerStep == 11) OpenerStep++;
                 else if (OpenerStep == 11) actionID = FiresReply;
 
-                if (CustomComboFunctions.WasLastAction(WindsReply) && OpenerStep == 12) OpenerStep++;
+                if ((CustomComboFunctions.WasLastWeaponskill(WindsReply) || !CustomComboFunctions.HasEffect(Buffs.WindsRumination)) && OpenerStep == 12) OpenerStep++;
                 else if (OpenerStep == 12) actionID = WindsReply;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 13) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 13) OpenerStep++;
                 else if (OpenerStep == 13) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(PerfectBalance) && OpenerStep == 14) OpenerStep++;
+                if ((CustomComboFunctions.WasLastAction(PerfectBalance) || CustomComboFunctions.HasEffect(Buffs.PerfectBalance)) && OpenerStep == 14) OpenerStep++;
                 else if (OpenerStep == 14) actionID = PerfectBalance;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 15) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 15) OpenerStep++;
                 else if (OpenerStep == 15) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 16) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 16) OpenerStep++;
                 else if (OpenerStep == 16) actionID = LeapingOpo;
 
-                if (CustomComboFunctions.WasLastAction(DragonKick) && OpenerStep == 17) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(DragonKick) && OpenerStep == 17) OpenerStep++;
                 else if (OpenerStep == 17) actionID = DragonKick;
 
-                if (CustomComboFunctions.WasLastAction(ElixirBurst) && OpenerStep == 18) OpenerStep++;
+                if (CustomComboFunctions.WasLastWeaponskill(ElixirBurst) && OpenerStep == 18) OpenerStep++;
                 else if (OpenerStep == 18) actionID = ElixirBurst;
 
-                if (CustomComboFunctions.WasLastAction(LeapingOpo) && OpenerStep == 19) CurrentState = OpenerState.OpenerFinished;
+                if (CustomComboFunctions.WasLastWeaponskill(LeapingOpo) && OpenerStep == 19) CurrentState = OpenerState.OpenerFinished;
                 else if (OpenerStep == 19) actionID = LeapingOpo;
 
                 if (ActionWatching.TimeSinceLastAction.TotalSeconds >= 5)
