@@ -590,12 +590,14 @@ namespace XIVSlothCombo.Combos.PvE
                         return true;
 
                     // odd minutes
-                    if (((SerpentsIreUsed <= 3 || SerpentsIreUsed > 4) && gauge.SerpentOffering >= 50 &&
-                        GetCooldownRemainingTime(SerpentsIre) is >= 50 and <= 65) ||
-                        (SerpentsIreUsed is 4 &&
-                        (gauge.SerpentOffering >= 95 ||
-                        (gauge.SerpentOffering >= 50 && WasLastWeaponskill(Ouroboros))) &&
-                        GetCooldownRemainingTime(SerpentsIre) is >= 45 and <= 90))
+                    //if (((SerpentsIreUsed <= 3 || SerpentsIreUsed > 4) && gauge.SerpentOffering >= 50 &&
+                    //    GetCooldownRemainingTime(SerpentsIre) is >= 50 and <= 65) ||
+                    //    (SerpentsIreUsed is 4 &&
+                    //    (gauge.SerpentOffering >= 95 ||
+                    //    (gauge.SerpentOffering >= 50 && WasLastWeaponskill(Ouroboros))) &&
+                    //    GetCooldownRemainingTime(SerpentsIre) is >= 45 and <= 90))
+                    if ((SerpentsIreUsed == 1 || SerpentsIreUsed >= 4) && gauge.SerpentOffering >= 50 &&
+                        GetCooldownRemainingTime(SerpentsIre) is >= 50 and <= 75)
                         return true;
                 }
                 return false;
