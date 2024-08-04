@@ -169,7 +169,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 HasEffect(Buffs.NoMercy) &&
                                 ActionReady(BowShock) &&
                                 LevelChecked(BowShock) &&
-                                GetBuffRemainingTime(Buffs.NoMercy) < 16)
+                                GetBuffRemainingTime(Buffs.NoMercy) < 17)
                                 return BowShock;
                         }
                     }
