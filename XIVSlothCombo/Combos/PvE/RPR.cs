@@ -4,6 +4,7 @@ using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.Core;
 using XIVSlothCombo.CustomComboNS;
 using XIVSlothCombo.CustomComboNS.Functions;
+using static XIVSlothCombo.Combos.JobHelpers.RPR;
 
 namespace XIVSlothCombo.Combos.PvE
 {

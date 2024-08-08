@@ -404,7 +404,6 @@ namespace XIVSlothCombo.Combos.PvE
                 var IsBahamutReady = OriginalHook(Aethercharge) is SummonBahamut;
                 var IsPhoenixReady = OriginalHook(Aethercharge) is SummonPhoenix;
                 var IsSolarBahamutReady = OriginalHook(Aethercharge) is SummonSolarBahamut;
-                float GCD = GetCooldown(OriginalHook(Ruin)).CooldownTotal;
 
                 if (WasLastAction(OriginalHook(Aethercharge))) DemiAttackCount = 0;    // Resets counter
 
@@ -455,7 +454,7 @@ namespace XIVSlothCombo.Combos.PvE
                         }
 
                         // Emergency priority Demi Nuke to prevent waste if you can't get demi attacks out to satisfy the slider check.
-                        if (OriginalHook(Ruin) is AstralImpulse or UmbralImpulse or FountainOfFire &&
+                        if (OriginalHook(Ruin) is AstralImpulse or UmbralImpulse or FountainOfFire && 
                             IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && GetCooldown(OriginalHook(Aethercharge)).CooldownElapsed >= 12.5)
                         {
                             if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks))
@@ -509,14 +508,15 @@ namespace XIVSlothCombo.Combos.PvE
                             }
                         }
 
-                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
-                            return SearingFlash;
+                        //if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
+                        //    return SearingFlash;
 
                         // Demi Nuke
                         if (OriginalHook(Ruin) is AstralImpulse or UmbralImpulse or FountainOfFire)
                         {
                             if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && IsBahamutReady && (LevelChecked(SummonSolarBahamut) || DemiAttackCount >= burstDelay) 
-                                && (IsNotEnabled(CustomComboPreset.SMN_SearingLight_Burst) || HasEffect(Buffs.SearingLight)))
+                                && (IsNotEnabled(CustomComboPreset.SMN_SearingLight_Burst) || (LevelChecked(SummonSolarBahamut) || HasEffect(Buffs.SearingLight) ||
+                                    AoECombo && IsEnabled(CustomComboPreset.SMN_SearingLight_STOnly))))
                             {
                                 if (IsOffCooldown(OriginalHook(EnkindleBahamut)) && LevelChecked(SummonBahamut))
                                     return OriginalHook(EnkindleBahamut);
@@ -537,7 +537,8 @@ namespace XIVSlothCombo.Combos.PvE
 
                             // Demi Nuke 3: More Boogaloo
                             if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_Attacks) && IsSolarBahamutReady && DemiAttackCount >= burstDelay && 
-                                (IsNotEnabled(CustomComboPreset.SMN_SearingLight_Burst) || HasEffect(Buffs.SearingLight)))
+                                (IsNotEnabled(CustomComboPreset.SMN_SearingLight_Burst) || HasEffect(Buffs.SearingLight) ||
+                                 AoECombo && IsEnabled(CustomComboPreset.SMN_SearingLight_STOnly)))
                             {
                                 if (IsOffCooldown(OriginalHook(EnkindleSolarBahamut)) && LevelChecked(SummonSolarBahamut))
                                     return OriginalHook(EnkindleSolarBahamut);
@@ -545,10 +546,16 @@ namespace XIVSlothCombo.Combos.PvE
                                 if (IsOffCooldown(Sunflare) && LevelChecked(Sunflare) && OriginalHook(Ruin) is UmbralImpulse)
                                     return OriginalHook(AstralFlow);
 
-                                if (IsOffCooldown(LuxSolaris) && IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_LuxSolaris) && HasEffect(Buffs.RefulgentLux))
-                                    return OriginalHook(LuxSolaris);
+                                if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
+                                    return SearingFlash;
+
                             }
                         }
+                        
+                        // Lux Solaris 
+                        if (IsOffCooldown(LuxSolaris) && IsEnabled(CustomComboPreset.SMN_Advanced_Combo_DemiSummons_LuxSolaris) && HasEffect(Buffs.RefulgentLux) &&
+                            (PlayerHealthPercentageHp() < 100 || GetBuffRemainingTime(Buffs.RefulgentLux) < GetCooldownRemainingTime(actionID) + 0.25))
+                            return OriginalHook(LuxSolaris);
 
                         // Fester/Painflare
                         if (IsEnabled(CustomComboPreset.SMN_Advanced_Combo_EDFester))
@@ -584,9 +591,6 @@ namespace XIVSlothCombo.Combos.PvE
 
                                         if (AoECombo && LevelChecked(Painflare) && IsNotEnabled(CustomComboPreset.SMN_DemiEgiMenu_oGCDPooling_Only))
                                             return Painflare;
-
-                                        if (IsEnabled(CustomComboPreset.SMN_SearingFlash) && HasEffect(Buffs.RubysGlimmer) && LevelChecked(SearingFlash))
-                                            return SearingFlash;
                                     }
                                 }
                             }

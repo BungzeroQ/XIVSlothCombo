@@ -141,17 +141,17 @@ namespace XIVSlothCombo.Combos.PvE
                     }
 
                     // OGCDs
-                    if (inCombat && canWeave)
+                    if (inCombat)
                     {
-                        if (level >= Levels.PerfectBalance && !HasEffect(Buffs.PerfectBalance) && HasCharges(PerfectBalance) && IsEnabled(CustomComboPreset.MNK_STUsePerfectBalance))
+                        if (level >= Levels.PerfectBalance && !HasEffect(Buffs.PerfectBalance) && HasCharges(PerfectBalance) && IsEnabled(CustomComboPreset.MNK_STUsePerfectBalance) && canWeave)
                         {
-                            if ((WasLastWeaponskill(LeapingOpo) || WasLastWeaponskill(Bootshine) || WasLastWeaponskill(DragonKick))
+                            if ((WasLastWeaponskill(OriginalHook(Bootshine)) || WasLastWeaponskill(DragonKick))
                                 && (GetCooldownRemainingTime(RiddleOfFire) < 7 || !LevelChecked(RiddleOfFire))
                                 && GetCooldownRemainingTime(Brotherhood) < 7 || !LevelChecked(Brotherhood))
                             {
                                 return PerfectBalance;
                             }
-                            else if ((WasLastWeaponskill(LeapingOpo) || WasLastWeaponskill(Bootshine) || WasLastWeaponskill(DragonKick)) 
+                            else if ((WasLastWeaponskill(OriginalHook(Bootshine)) || WasLastWeaponskill(DragonKick)) 
                                 && HasEffect(Buffs.RiddleOfFire) 
                                 && GetBuffRemainingTime(Buffs.RiddleOfFire) > 8 
                                 && !HasEffect(Buffs.FiresRumination))
@@ -160,7 +160,7 @@ namespace XIVSlothCombo.Combos.PvE
                             }
                         }
 
-                        if (IsEnabled(CustomComboPreset.MNK_STUseBuffs))
+                        if (IsEnabled(CustomComboPreset.MNK_STUseBuffs) && canWeave)
                         {
                             if (level >= Levels.Brotherhood
                                 && HasEffect(Buffs.RiddleOfFire)
@@ -178,7 +178,7 @@ namespace XIVSlothCombo.Combos.PvE
 
                             if (IsEnabled(CustomComboPreset.MNK_STUseROW)
                                 && level >= Levels.RiddleOfWind
-                                && ActionWatching.CombatActions.Any(a => a == RiddleOfFire && a == Brotherhood)
+                                && ActionWatching.CombatActions.Count(x => x == RiddleOfFire || x == Brotherhood) >= 2
                                 && !IsOnCooldown(RiddleOfWind))
                             {
                                 return RiddleOfWind;
@@ -192,6 +192,7 @@ namespace XIVSlothCombo.Combos.PvE
 
                         if (IsEnabled(CustomComboPreset.MNK_STUseTheForbiddenChakra)
                             && Gauge.Chakra >= 5
+                            && canWeave
                             && level >= Levels.SteelPeak)
                         {
                             return OriginalHook(Meditation);

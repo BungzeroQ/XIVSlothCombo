@@ -202,13 +202,14 @@ namespace XIVSlothCombo.Combos.PvE
                                     && ((WasLastWeaponskill(Disesteem) && CombatEngageDuration().TotalSeconds < 30) || CombatEngageDuration().TotalSeconds > 30)
                                     && ActionReady(SaltedEarth))
                                     return SaltedEarth;
-                                //Cast Salt and Darkness
-                                if (HasEffect(Buffs.SaltedEarth)
-                                 && ((GetBuffRemainingTime(Buffs.SaltedEarth) < 7 && GetCooldownRemainingTime(LivingShadow) >= 80) || GetCooldownRemainingTime(LivingShadow) < 80)
-                                 && CanDelayedWeave(actionID)
-                                 && ActionReady(SaltAndDarkness))
-                                    return OriginalHook(SaltAndDarkness);
                             }
+
+                            //Cast Salt and Darkness
+                            if (HasEffect(Buffs.SaltedEarth)
+                             && GetBuffRemainingTime(Buffs.SaltedEarth) < 7
+                             && CanDelayedWeave(actionID)
+                             && ActionReady(SaltAndDarkness))
+                                return OriginalHook(SaltAndDarkness);
 
                             // Shadowbringer
                             if (LevelChecked(Shadowbringer)
@@ -229,10 +230,8 @@ namespace XIVSlothCombo.Combos.PvE
                             if (IsEnabled(CustomComboPreset.DRK_ST_CDs_CarveAndSpit)
                                 && IsOffCooldown(CarveAndSpit)
                                 && CanWeave(actionID)
-                                && (LevelChecked(Delirium)
-                                    && ((HasEffect(Buffs.Delirium)
-                                        && ((LevelChecked(Comeuppance) && ((WasLastWeaponskill(Comeuppance) || WasLastWeaponskill(Torcleaver)))) || (GetCooldownRemainingTime(Delirium) < 55))
-                                || !LevelChecked(Delirium))))
+                                && ((LevelChecked(Delirium) && GetCooldownRemainingTime(Delirium) < 55)
+                                    || !LevelChecked(Delirium))
                                 && LevelChecked(CarveAndSpit))
                                 return CarveAndSpit;
                         }
@@ -252,20 +251,23 @@ namespace XIVSlothCombo.Combos.PvE
                     && IsEnabled(CustomComboPreset.DRK_ST_Bloodspiller))
                 {
                     //Regular Bloodspiller
-                    if (GetBuffStacks(Buffs.Delirium) > 0)
+                    //if (GetBuffStacks(Buffs.Delirium) > 0)
+                    if (HasEffect(Buffs.Delirium))
+                    {
                         return Bloodspiller;
+                    }
+                    else if (LevelChecked(LivingShadow) && (gauge.Blood >= 50 && GetCooldownRemainingTime(LivingShadow) >= 60)
+                        || (gauge.Blood >= 60 && GetCooldownRemainingTime(LivingShadow) is > 45 and < 60)
+                        || (gauge.Blood >= 90 && !ActionReady(Delirium)))
+                    {
+                        return Bloodspiller;
+                    }
 
                     //Blood management before Delirium
                     if (IsEnabled(CustomComboPreset.DRK_ST_Delirium))
-                    {
-                        if (LevelChecked(LivingShadow) && (gauge.Blood >= 50 && GetCooldownRemainingTime(LivingShadow) >= 60)
-                           || (gauge.Blood >= 60 && GetCooldownRemainingTime(LivingShadow) is > 45 and < 60))
-                        {
-                            return Bloodspiller;
-                        }
-
-                        if (!LevelChecked(LivingShadow) && (gauge.Blood >= 60 && GetCooldownRemainingTime(Delirium) is > 0 and < 3)
-                            || (gauge.Blood >= 50 && GetCooldownRemainingTime(Delirium) > 37))
+                    {                    
+                        if (!LevelChecked(LivingShadow) && ((gauge.Blood >= 60 && GetCooldownRemainingTime(Delirium) is > 0 and < 3)
+                            || (gauge.Blood >= 50 && GetCooldownRemainingTime(Delirium) > 37)))
                         {
                             return Bloodspiller;
                         }
