@@ -1,9 +1,11 @@
 using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Statuses;
+using System.Linq;
 using XIVSlothCombo.Combos.JobHelpers;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.CustomComboNS;
 using XIVSlothCombo.CustomComboNS.Functions;
+using XIVSlothCombo.Data;
 using XIVSlothCombo.Extensions;
 using static XIVSlothCombo.CustomComboNS.Functions.CustomComboFunctions;
 
@@ -318,6 +320,7 @@ internal class DRG
                         //Battle Litany Feature
                         if (IsEnabled(CustomComboPreset.DRG_ST_Litany) &&
                             ActionReady(BattleLitany) &&
+                            HasEffect(Buffs.LanceCharge) &&
                             AnimationLock.CanDRGWeave(BattleLitany) &&
                             GetTargetHPPercent() >= Config.DRG_ST_LitanyHP)
                             return BattleLitany;
@@ -328,7 +331,8 @@ internal class DRG
                         //Life Surge Feature
                         if (IsEnabled(CustomComboPreset.DRG_ST_LifeSurge) &&
                             ActionReady(LifeSurge) &&
-                            (GetCooldownRemainingTime(LifeSurge) < 40 || GetCooldownRemainingTime(BattleLitany) > 50) &&
+                            //(GetCooldownRemainingTime(LifeSurge) < 40 || GetCooldownRemainingTime(BattleLitany) > 50) &&
+                            (GetCooldownRemainingTime(LifeSurge) < 40 || GetCooldownRemainingTime(BattleLitany) > 45) &&
                             AnimationLock.CanDRGWeave(LifeSurge) &&
                             HasEffect(Buffs.LanceCharge) &&
                             !HasEffect(Buffs.LifeSurge) &&
@@ -340,12 +344,15 @@ internal class DRG
                         //Geirskogul Feature
                         if (IsEnabled(CustomComboPreset.DRG_ST_Geirskogul) &&
                             ActionReady(Geirskogul) &&
+                            HasEffect(Buffs.LanceCharge) &&
                             AnimationLock.CanDRGWeave(Geirskogul))
                             return Geirskogul;
 
                         //Dragonfire Dive Feature
                         if (IsEnabled(CustomComboPreset.DRG_ST_DragonfireDive) &&
                             ActionReady(DragonfireDive) &&
+                            HasEffect(Buffs.LanceCharge) &&
+                            HasEffect(Buffs.BattleLitany) &&
                             AnimationLock.CanDRGWeave(DragonfireDive) &&
                             (!IsEnabled(CustomComboPreset.DRG_ST_DragonfireDive_Movement) ||
                              (IsEnabled(CustomComboPreset.DRG_ST_DragonfireDive_Movement) && !IsMoving)))
@@ -355,6 +362,7 @@ internal class DRG
                         if (IsEnabled(CustomComboPreset.DRG_ST_HighJump) &&
                             ActionReady(OriginalHook(Jump)) &&
                             AnimationLock.CanDRGWeave(OriginalHook(Jump)) &&
+                            ActionWatching.CombatActions.Any(ca => ca == OriginalHook(ChaosThrust)) &&
                             (!IsEnabled(CustomComboPreset.DRG_ST_HighJump_Movement) ||
                              (IsEnabled(CustomComboPreset.DRG_ST_HighJump_Movement) && !IsMoving)))
                             return OriginalHook(Jump);

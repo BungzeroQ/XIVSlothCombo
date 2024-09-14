@@ -397,12 +397,29 @@ internal class MCH
                         LevelChecked(Hypercharge) && !Gauge.IsOverheated &&
                         GetTargetHPPercent() >= Config.MCH_ST_HyperchargeHP)
                     {
+                        //// Ensures Hypercharge is double weaved with WF
+                        //if ((LevelChecked(FullMetalField) && JustUsed(FullMetalField) &&
+                        //     (GetCooldownRemainingTime(Wildfire) < GCD || ActionReady(Wildfire))) ||
+                        //    (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
+                        //    !LevelChecked(Wildfire))
+                        //    return Hypercharge;
+
+                        //// Only Hypercharge when tools are on cooldown
+                        //if (drillCD && anchorCD && sawCD &&
+                        //    ((GetCooldownRemainingTime(Wildfire) > 40 && LevelChecked(Wildfire)) ||
+                        //     !LevelChecked(Wildfire)))
+                        //    return Hypercharge;
+
                         // Ensures Hypercharge is double weaved with WF
-                        if ((LevelChecked(FullMetalField) && JustUsed(FullMetalField) &&
-                             (GetCooldownRemainingTime(Wildfire) < GCD || ActionReady(Wildfire))) ||
-                            (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
-                            !LevelChecked(Wildfire))
-                            return Hypercharge;
+                        if ((LevelChecked(BarrelStabilizer) && HasEffect(Buffs.Hypercharged)) || (!LevelChecked(BarrelStabilizer) && Gauge.Heat >= 50))
+                        {
+                            if ((LevelChecked(FullMetalField) && JustUsed(FullMetalField) &&
+                                (GetCooldownRemainingTime(Wildfire) < 1.5 || ActionReady(Wildfire))) ||
+                                (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
+                                !LevelChecked(Wildfire))
+                                return Hypercharge;
+                        }
+
 
                         // Only Hypercharge when tools are on cooldown
                         if (drillCD && anchorCD && sawCD &&
@@ -414,7 +431,8 @@ internal class MCH
                     // Queen
                     if (IsEnabled(CustomComboPreset.MCH_Adv_TurretQueen) &&
                         MCHExtensions.UseQueen(Gauge) &&
-                        GetCooldownRemainingTime(Wildfire) > GCD)
+                        //GetCooldownRemainingTime(Wildfire) > GCD)
+                        (!Gauge.IsOverheated || (Gauge.IsOverheated && GetBuffRemainingTime(Buffs.Overheated) > 8)))
                         return OriginalHook(RookAutoturret);
 
                     // Gauss Round and Ricochet during HC

@@ -791,7 +791,8 @@ namespace XIVSlothCombo.Combos.PvE
                         }
                     }
                     //Moved below weaves bc roobert says it is blocking his weaves from happening
-                    if (HasEffect(Buffs.RadiantEncoreReady) && !JustUsed(RadiantFinale) && GetCooldownElapsed(RadiantFinale) >= 4.2f && IsEnabled(CustomComboPreset.BRD_Adv_BuffsEncore))
+                    //if (HasEffect(Buffs.RadiantEncoreReady) && !JustUsed(RadiantFinale) && GetCooldownElapsed(RadiantFinale) >= 4.2f && IsEnabled(CustomComboPreset.BRD_Adv_BuffsEncore))
+                    if (HasEffect(Buffs.RadiantEncoreReady) && JustUsed(RagingStrikes, 20) && IsEnabled(CustomComboPreset.BRD_Adv_BuffsEncore))
                         return OriginalHook(RadiantEncore);
 
                     if (isEnemyHealthHigh)
