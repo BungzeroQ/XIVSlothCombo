@@ -1084,13 +1084,21 @@ namespace XIVSlothCombo.Combos.PvE
 
             protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
             {
+                VPRGauge? gauge = GetJobGauge<VPRGauge>();
+                int RattlingCoils = gauge.RattlingCoilStacks;
+
                 if (actionID is UncoiledFury)
                 {
-                    if (HasEffect(Buffs.PoisedForTwinfang))
-                        return OriginalHook(Twinfang);
+                    if (RattlingCoils > 0)
+                    {
+                        if (HasEffect(Buffs.PoisedForTwinfang))
+                            return OriginalHook(Twinfang);
 
-                    if (HasEffect(Buffs.PoisedForTwinblood))
-                        return OriginalHook(Twinblood);
+                        if (HasEffect(Buffs.PoisedForTwinblood))
+                            return OriginalHook(Twinblood);
+                    }
+
+                    return WrithingSnap;
                 }
                 return actionID;
             }
