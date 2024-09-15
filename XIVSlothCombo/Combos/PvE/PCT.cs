@@ -87,8 +87,7 @@ namespace XIVSlothCombo.Combos.PvE
                 PCT_ST_WeaponStop = new("PCT_ST_WeaponStop"),
                 PCT_AoE_WeaponStop = new("PCT_AoE_WeaponStop"),
                 PCT_ST_LandscapeStop = new("PCT_ST_LandscapeStop"),
-                PCT_AoE_LandscapeStop = new("PCT_AoE_LandscapeStop");
-                
+                PCT_AoE_LandscapeStop = new("PCT_AoE_LandscapeStop");                
 
             public static UserBool
                 CombinedMotifsMog = new("CombinedMotifsMog"),
