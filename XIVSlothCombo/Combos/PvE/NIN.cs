@@ -264,7 +264,7 @@ namespace XIVSlothCombo.Combos.PvE
                         if (IsEnabled(CustomComboPreset.NIN_ST_AdvancedMode_Mug) &&
                             IsEnabled(CustomComboPreset.NIN_ST_AdvancedMode_Mug_AlignBefore) &&
                             HasEffect(Buffs.ShadowWalker) &&
-                            GetCooldownRemainingTime(TrickAttack) <= 3 &&
+                            GetCooldownRemainingTime(TrickAttack) <= 5 &&
                             ((IsEnabled(CustomComboPreset.NIN_ST_AdvancedMode_TrickAttack_Delayed) && InCombat() && combatDuration.TotalSeconds > 6) ||
                             IsNotEnabled(CustomComboPreset.NIN_ST_AdvancedMode_TrickAttack_Delayed)) &&
                             IsOffCooldown(Mug) &&

@@ -420,17 +420,10 @@ namespace XIVSlothCombo.Combos.PvE
                                     return OriginalHook(DangerZone);
                                 //Lv100 use
                                 //if (LevelChecked(ReignOfBeasts) && (JustUsed(DoubleDown, 5f) || nmCD > 17))
-                                if (LevelChecked(ReignOfBeasts) && (JustUsed(GnashingFang) || nmCD > 17))
+                                if (LevelChecked(ReignOfBeasts) && (JustUsed(GnashingFang, 10f) || nmCD > 17))
                                     return OriginalHook(DangerZone);
                             }
 
-                            //Hypervelocity
-                            if (IsEnabled(CustomComboPreset.GNB_ST_Continuation) && JustUsed(BurstStrike, 5f) && LevelChecked(Hypervelocity) && HasEffect(Buffs.ReadyToBlast) && nmCD > 1)
-                                return Hypervelocity;
-
-                            //Continuation
-                            if (IsEnabled(CustomComboPreset.GNB_ST_Continuation) && LevelChecked(Continuation) && (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
-                                return OriginalHook(Continuation);
 
                             ////60s weaves
                             //if (HasEffect(Buffs.NoMercy) && (GetBuffRemainingTime(Buffs.NoMercy) < 17.5))
@@ -461,6 +454,14 @@ namespace XIVSlothCombo.Combos.PvE
                             }
                         }
                     }
+
+                    //Hypervelocity
+                    if (IsEnabled(CustomComboPreset.GNB_ST_Continuation) && JustUsed(BurstStrike, 5f) && LevelChecked(Hypervelocity) && HasEffect(Buffs.ReadyToBlast) && nmCD > 1)
+                        return Hypervelocity;
+
+                    //Continuation
+                    if (IsEnabled(CustomComboPreset.GNB_ST_Continuation) && LevelChecked(Continuation) && (HasEffect(Buffs.ReadyToRip) || HasEffect(Buffs.ReadyToTear) || HasEffect(Buffs.ReadyToGouge)))
+                        return OriginalHook(Continuation);
 
                     ////Hypervelocity
                     //if (IsEnabled(CustomComboPreset.GNB_ST_Continuation) && JustUsed(BurstStrike, 5f) && LevelChecked(Hypervelocity) && HasEffect(Buffs.ReadyToBlast) && nmCD > 1)
@@ -501,7 +502,7 @@ namespace XIVSlothCombo.Combos.PvE
                     //    }
                     //}
                     //Sonic Break 
-                    if (IsEnabled(CustomComboPreset.GNB_ST_Advanced_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && (HasEffect(Buffs.NoMercy) || JustUsed(NoMercy, 20f)))
+                    if (IsEnabled(CustomComboPreset.GNB_ST_Advanced_CooldownsGroup) && IsEnabled(CustomComboPreset.GNB_ST_SonicBreak) && HasEffect(Buffs.NoMercy))
                     {
                         ////Lv100
                         //if (LevelChecked(ReignOfBeasts))
@@ -587,8 +588,15 @@ namespace XIVSlothCombo.Combos.PvE
                         //    || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && !LevelChecked(Bloodfest) && JustUsed(NoMercy, 3f)) //<=Lv79 use
                         //    || (nmCD > GCD * 7 && nmCD < GCD * 14)) //30s use
                         //    return GnashingFang;
-                        if (!HasEffect(Buffs.ReadyToBlast) && GunStep == 0 && ActionReady(GnashingFang) 
-                            && ((HasEffect(Buffs.NoMercy) || JustUsed(NoMercy, 20f)) || (nmCD > GCD * 7 && nmCD < GCD * 14)))
+                        if (!HasEffect(Buffs.ReadyToBlast) && GunStep == 0 && ActionReady(GnashingFang)
+                            && (LevelChecked(ReignOfBeasts) && HasEffect(Buffs.NoMercy)) //Lv100 odd/even minute use
+                            || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && HasEffect(Buffs.NoMercy)) //Lv90 odd/even minute use
+                            || (!LevelChecked(ReignOfBeasts) && LevelChecked(DoubleDown) && nmCD > GCD * 20) //Lv90 odd minute scuffed windows
+                            || (LevelChecked(DoubleDown) && !ActionReady(Bloodfest)) //Lv90+ Opener/Reopener conditions
+                            || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && JustUsed(NoMercy, 3f)) //Lv80 odd/even minute use
+                            || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && LevelChecked(Bloodfest) && Ammo == 1 && JustUsed(NoMercy, 3f) && ActionReady(Bloodfest)) //Lv80 Opener/Reopener
+                            || (!LevelChecked(ReignOfBeasts) && !LevelChecked(DoubleDown) && !LevelChecked(Bloodfest) && JustUsed(NoMercy, 3f)) //<=Lv79 use
+                            || (nmCD > GCD * 7 && nmCD < GCD * 14)) //30s use
                             return GnashingFang;
                     }
 
@@ -626,7 +634,10 @@ namespace XIVSlothCombo.Combos.PvE
 
                         if (!ActionReady(GnashingFang) && !ActionReady(DoubleDown) && ActionReady(BurstStrike) && GunStep == 0 && !HasEffect(Buffs.ReadyToBreak))
                         {
-                            if ((HasEffect(Buffs.NoMercy) || GetTargetHPPercent() is < 1 and > 0) && Ammo > (LevelChecked(ReignOfBeasts) && bfCD > 90 ? 1 : 0))
+                            if ((HasEffect(Buffs.NoMercy) || GetTargetHPPercent() is < 1 and > 0) && Ammo > 0)
+                                return BurstStrike;
+
+                            if (!HasEffect(Buffs.NoMercy) && LevelChecked(ReignOfBeasts) && bfCD > 90 && Ammo > 1)
                                 return BurstStrike;
                         }
                     }
@@ -637,8 +648,8 @@ namespace XIVSlothCombo.Combos.PvE
                     //    return BurstStrike;
 
                     ////GnashingFang combo safety net
-                    //if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && GunStep is 1 or 2)
-                    //    return OriginalHook(GnashingFang);
+                    if (IsEnabled(CustomComboPreset.GNB_ST_Gnashing) && GunStep is 1 or 2)
+                        return OriginalHook(GnashingFang);
 
                     //123 (overcap included)
                     if (comboTime > 0)

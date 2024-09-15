@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Statuses;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.Core;
 using XIVSlothCombo.CustomComboNS;
+using XIVSlothCombo.Data;
 
 namespace XIVSlothCombo.Combos.PvE
 {
@@ -166,17 +168,22 @@ namespace XIVSlothCombo.Combos.PvE
                     var infuriateGauge = PluginConfiguration.GetCustomIntValue(Config.WAR_InfuriateSTGauge);
                     float GCD = GetCooldown(HeavySwing).CooldownTotal;
 
+                    bool phaseInnerReleaseBurst = JustUsed(InnerRelease, 20f);
+                    bool phaseTwoMinBurst = ActionWatching.CombatActions.Count(actionID => actionID == InnerRelease) % 2 == 0;
+
                     if (IsEnabled(CustomComboPreset.WAR_Variant_Cure) && IsEnabled(Variant.VariantCure) && 
                         PlayerHealthPercentageHp() <= GetOptionValue(Config.WAR_VariantCure))
                         return Variant.VariantCure;
                     if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_RangedUptime) &&
                         LevelChecked(Tomahawk) && !InMeleeRange() && HasBattleTarget())
                         return Tomahawk;
-                    if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Infuriate) && 
-                        InCombat() && LevelChecked(Infuriate) && ActionReady(Infuriate) && 
+                    if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Infuriate) &&
+                        InCombat() && LevelChecked(Infuriate) && ActionReady(Infuriate) &&
                         !HasEffect(Buffs.NascentChaos) && !HasEffect(Buffs.InnerReleaseStacks)
-                        && gauge <= infuriateGauge && CanWeave(actionID) && GetRemainingCharges(Infuriate) > infuriateChargesRemaining)
+                        //&& gauge <= infuriateGauge && CanWeave(actionID) && GetRemainingCharges(Infuriate) > infuriateChargesRemaining)
+                        && gauge <= (HasEffect(Buffs.SurgingTempest) ? 30 : 50) && CanWeave(actionID) && GetRemainingCharges(Infuriate) > (phaseTwoMinBurst ? 0 : 1))
                         return Infuriate;
+
                     if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_InnerRelease) && CanWeave(actionID) && ActionReady(OriginalHook(Berserk)) && LevelChecked(Berserk) && !LevelChecked(StormsEye) && InCombat())
                         return OriginalHook(Berserk);
 

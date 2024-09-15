@@ -311,6 +311,7 @@ namespace XIVSlothCombo.Combos.PvE
                     !HasEffect(Buffs.FinishingMoveReady) &&
                     (IsOffCooldown(Flourish) ||
                      GetCooldownRemainingTime(Flourish) > 5) &&
+                     //(GetCooldownRemainingTime(TechnicalStep) > GetCooldownRemainingTime(StandardStep)) &&
                     !HasEffect(Buffs.TechnicalFinish);
                 #endregion
 
@@ -396,7 +397,7 @@ namespace XIVSlothCombo.Combos.PvE
                     (HasEffect(Buffs.ThreeFoldFanDance) ||
                      HasEffect(Buffs.FourFoldFanDance)) &&
                      CombatEngageDuration().TotalSeconds > 20 &&
-                     HasEffect(Buffs.TechnicalFinish) && 
+                     HasEffect(Buffs.TechnicalFinish) &&
                      GetCooldownRemainingTime(Flourish) > 58)
                 {
                     if (HasEffect(Buffs.ThreeFoldFanDance) && CanDelayedWeave(actionID))
@@ -406,10 +407,10 @@ namespace XIVSlothCombo.Combos.PvE
                 }
 
                 // ST Interrupt
-                    if (IsEnabled(CustomComboPreset.DNC_ST_Adv_Interrupt) &&
-                    CanInterruptEnemy() &&
-                    ActionReady(All.HeadGraze) &&
-                    !HasEffect(Buffs.TechnicalFinish))
+                if (IsEnabled(CustomComboPreset.DNC_ST_Adv_Interrupt) &&
+                CanInterruptEnemy() &&
+                ActionReady(All.HeadGraze) &&
+                !HasEffect(Buffs.TechnicalFinish))
                     return All.HeadGraze;
 
                 // Variant Cure
@@ -904,7 +905,7 @@ namespace XIVSlothCombo.Combos.PvE
                     {
                         // AoE Fan Dance overcap protection
                         if (IsEnabled(CustomComboPreset.DNC_AoE_FanDanceOvercap) &&
-                            LevelChecked(FanDance2) && gauge.Feathers is 4 && 
+                            LevelChecked(FanDance2) && gauge.Feathers is 4 &&
                             (HasEffect(Buffs.SilkenSymmetry) || HasEffect(Buffs.SilkenFlow)))
                             return FanDance2;
 
