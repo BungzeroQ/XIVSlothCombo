@@ -181,7 +181,8 @@ namespace XIVSlothCombo.Combos.PvE
                         InCombat() && LevelChecked(Infuriate) && ActionReady(Infuriate) &&
                         !HasEffect(Buffs.NascentChaos) && !HasEffect(Buffs.InnerReleaseStacks)
                         //&& gauge <= infuriateGauge && CanWeave(actionID) && GetRemainingCharges(Infuriate) > infuriateChargesRemaining)
-                        && gauge <= (HasEffect(Buffs.SurgingTempest) ? 30 : 50) && CanWeave(actionID) && GetRemainingCharges(Infuriate) > (phaseTwoMinBurst ? 0 : 1))
+                        && (GetCooldownRemainingTime(InnerRelease) <= 1.5f || phaseInnerReleaseBurst || !LevelChecked(InnerRelease))
+                        && gauge <= 50 && CanWeave(actionID) && GetRemainingCharges(Infuriate) > (phaseTwoMinBurst ? 0 : 1))
                         return Infuriate;
 
                     if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_InnerRelease) && CanWeave(actionID) && ActionReady(OriginalHook(Berserk)) && LevelChecked(Berserk) && !LevelChecked(StormsEye) && InCombat())
@@ -203,14 +204,15 @@ namespace XIVSlothCombo.Combos.PvE
 
                             if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_InnerRelease) && CanWeave(actionID) && ActionReady(OriginalHook(Berserk)) && LevelChecked(Berserk))
                                 return OriginalHook(Berserk);
-                            if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Upheaval) && ActionReady(Upheaval) && LevelChecked(Upheaval))
+                            if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Upheaval) && ActionReady(Upheaval) && LevelChecked(Upheaval) && (phaseInnerReleaseBurst || GetCooldownRemainingTime(InnerRelease) < 17))
                                 return Upheaval;
                             if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_PrimalWrath) && HasEffect(Buffs.Wrathful) && LevelChecked(PrimalWrath))
                                 return PrimalWrath;
-                            if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Onslaught) && LevelChecked(Onslaught) && GetRemainingCharges(Onslaught) > onslaughtChargesRemaining)
+                            if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Onslaught) && LevelChecked(Onslaught) && GetRemainingCharges(Onslaught) > (phaseTwoMinBurst ? 0 : 1))
                             {
                                 if (IsNotEnabled(CustomComboPreset.WAR_ST_Advanced_Onslaught_MeleeSpender) ||
-                                    (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Onslaught_MeleeSpender) && !IsMoving && GetTargetDistance() <= 1 && (GetCooldownRemainingTime(InnerRelease) > 40 || !LevelChecked(InnerRelease))))
+                                    //(IsEnabled(CustomComboPreset.WAR_ST_Advanced_Onslaught_MeleeSpender) && !IsMoving && GetTargetDistance() <= 1 && (GetCooldownRemainingTime(InnerRelease) > 40 || !LevelChecked(InnerRelease))))
+                                    (IsEnabled(CustomComboPreset.WAR_ST_Advanced_Onslaught_MeleeSpender) && !IsMoving && GetTargetDistance() <= 1 && (phaseInnerReleaseBurst || !LevelChecked(InnerRelease))))
                                     return Onslaught;
                             }
                         }
@@ -232,7 +234,7 @@ namespace XIVSlothCombo.Combos.PvE
                         {
                             if (IsEnabled(CustomComboPreset.WAR_ST_Advanced_FellCleave) && LevelChecked(InnerBeast))
                             {
-                                if (HasEffect(Buffs.InnerReleaseStacks) || (HasEffect(Buffs.NascentChaos) && LevelChecked(InnerChaos)))
+                                if ((HasEffect(Buffs.InnerReleaseStacks) || (HasEffect(Buffs.NascentChaos) && LevelChecked(InnerChaos))) && gauge >= 50 && phaseInnerReleaseBurst)
                                     return OriginalHook(InnerBeast);
 
                                 if (HasEffect(Buffs.NascentChaos) && !LevelChecked(InnerChaos) && gauge >= 50)
