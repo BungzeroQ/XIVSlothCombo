@@ -73,9 +73,9 @@ namespace XIVSlothCombo.Combos.PvE
 
             public static UserInt
                 GNB_ST_NoMercyStop = new("GNB_ST_NoMercyStop"),
-                GNB_AoE_NoMercyStop = new ("GNB_AoE_NoMercyStop");
+                GNB_AoE_NoMercyStop = new("GNB_AoE_NoMercyStop");
         }
-    
+
 
         internal class GNB_ST_SimpleMode : CustomCombo
         {
@@ -840,7 +840,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 return OriginalHook(ReignOfBeasts);
                         }
                         //FatedCircle - if not unlocked, use BurstStrike
-                        if (Ammo > 0 && LevelChecked(FatedCircle) && 
+                        if (Ammo > 0 && LevelChecked(FatedCircle) &&
                             (HasEffect(Buffs.NoMercy) && !ActionReady(DoubleDown) && GunStep == 0) || //use when under NM after DD & ignores GF
                             (bfCD < 6)) // Bloodfest prep
                             return FatedCircle;
@@ -939,7 +939,7 @@ namespace XIVSlothCombo.Combos.PvE
                                 return OriginalHook(ReignOfBeasts);
                         }
                         //FatedCircle - if not unlocked, use BurstStrike
-                        if (Ammo > 0 && LevelChecked(FatedCircle) && 
+                        if (Ammo > 0 && LevelChecked(FatedCircle) &&
                             ((IsEnabled(CustomComboPreset.GNB_AoE_FatedCircle) && HasEffect(Buffs.NoMercy) && !ActionReady(DoubleDown) && GunStep == 0) || //use when under NM after DD & ignores GF
                             (IsEnabled(CustomComboPreset.GNB_AoE_Bloodfest) && bfCD < 6))) // Bloodfest prep
                             return FatedCircle;
