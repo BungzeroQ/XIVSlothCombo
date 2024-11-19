@@ -77,7 +77,7 @@ internal class MCH
                     {
                         // Ensures Hypercharge is double weaved with WF
                         if ((LevelChecked(FullMetalField) && JustUsed(FullMetalField) &&
-                             (GetCooldownRemainingTime(Wildfire) < GCD || ActionReady(Wildfire))) ||
+                             (GetCooldownRemainingTime(Wildfire) < 1.5 || ActionReady(Wildfire))) ||
                             (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
                             !LevelChecked(Wildfire))
                             return Hypercharge;
