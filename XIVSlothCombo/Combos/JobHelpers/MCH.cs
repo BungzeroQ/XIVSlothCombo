@@ -15,26 +15,26 @@ internal class MCH
     // MCH Gauge & Extensions
     public static MCHOpenerLogic MCHOpener = new();
 
-    public static float GCD = GetCooldown(OriginalHook(SplitShot)).CooldownTotal;
-    public static float heatblastRC = GetCooldown(Heatblast).CooldownTotal;
-    public static MCHGauge Gauge = GetJobGauge<MCHGauge>();
+    //public static float GCD = GetCooldown(OriginalHook(SplitShot)).CooldownTotal;
+    //public static float heatblastRC = GetCooldown(Heatblast).CooldownTotal;
+    //public static MCHGauge Gauge = GetJobGauge<MCHGauge>();
 
-    public static bool drillCD = !LevelChecked(Drill) || (!TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
-                                                          GetCooldownRemainingTime(Drill) > heatblastRC * 6) ||
-                                 (TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
-                                  GetRemainingCharges(Drill) < GetMaxCharges(Drill) &&
-                                  GetCooldownRemainingTime(Drill) > heatblastRC * 6);
+    //public static bool drillCD = !LevelChecked(Drill) || (!TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
+    //                                                      GetCooldownRemainingTime(Drill) > heatblastRC * 6) ||
+    //                             (TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
+    //                              GetRemainingCharges(Drill) < GetMaxCharges(Drill) &&
+    //                              GetCooldownRemainingTime(Drill) > heatblastRC * 6);
 
-    public static bool anchorCD = !LevelChecked(AirAnchor) ||
-                                  (LevelChecked(AirAnchor) && GetCooldownRemainingTime(AirAnchor) > heatblastRC * 6);
+    //public static bool anchorCD = !LevelChecked(AirAnchor) ||
+    //                              (LevelChecked(AirAnchor) && GetCooldownRemainingTime(AirAnchor) > heatblastRC * 6);
 
-    public static bool sawCD = !LevelChecked(Chainsaw) ||
-                               (LevelChecked(Chainsaw) && GetCooldownRemainingTime(Chainsaw) > heatblastRC * 6);
+    //public static bool sawCD = !LevelChecked(Chainsaw) ||
+    //                           (LevelChecked(Chainsaw) && GetCooldownRemainingTime(Chainsaw) > heatblastRC * 6);
 
-    public static bool interruptReady => ActionReady(All.HeadGraze) && CanInterruptEnemy() &&
-                                         CanDelayedWeave(ActionWatching.LastWeaponskill);
+    //public static bool interruptReady => ActionReady(All.HeadGraze) && CanInterruptEnemy() &&
+    //                                     CanDelayedWeave(ActionWatching.LastWeaponskill);
 
-    public static int BSUsed => ActionWatching.CombatActions.Count(x => x == BarrelStabilizer);
+    //public static int BSUsed => ActionWatching.CombatActions.Count(x => x == BarrelStabilizer);
 
     internal class MCHOpenerLogic
     {
@@ -290,6 +290,8 @@ internal class MCH
 
         public static bool UseQueen(MCHGauge gauge)
         {
+            int BSUsed = ActionWatching.CombatActions.Count(x => x == BarrelStabilizer);
+
             if (!ActionWatching.HasDoubleWeaved() && !gauge.IsOverheated && !HasEffect(Buffs.Wildfire) &&
                 !JustUsed(OriginalHook(Heatblast)) && LevelChecked(OriginalHook(RookAutoturret)) &&
                 gauge is { IsRobotActive: false, Battery: >= 50 })

@@ -1,3 +1,6 @@
+using Dalamud.Game.ClientState.JobGauge.Enums;
+using Dalamud.Game.ClientState.JobGauge.Types;
+using System;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.CustomComboNS;
 using XIVSlothCombo.CustomComboNS.Functions;
@@ -34,6 +37,16 @@ internal class VPR
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
             bool in5y = GetTargetDistance() <= 5;
+            var gauge = GetJobGauge<VPRGauge>();
+            var SwiftskinsCoilReady = gauge.DreadCombo == DreadCombo.SwiftskinsCoil;
+            var HuntersCoilReady = gauge.DreadCombo == DreadCombo.HuntersCoil;
+            var VicewinderReady = gauge.DreadCombo == DreadCombo.Dreadwinder;
+            var trueNorthReady = TargetNeedsPositionals() && ActionReady(All.TrueNorth) && !HasEffect(All.Buffs.TrueNorth);
+            var CappedOnCoils =
+    (TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 2) ||
+    (!TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 1);
+            float GCD = GetCooldown(OriginalHook(ReavingFangs)).CooldownTotal;
+            float ireCD = GetCooldownRemainingTime(SerpentsIre);
 
             if (actionID is SteelFangs)
             {
@@ -90,7 +103,7 @@ internal class VPR
 
                 //GCDs
                 if (LevelChecked(WrithingSnap) && !InMeleeRange() && HasBattleTarget())
-                    return HasRattlingCoilStack(gauge)
+                    return gauge.RattlingCoilStacks > 0
                         ? UncoiledFury
                         : WrithingSnap;
 
@@ -251,6 +264,16 @@ internal class VPR
             float enemyHP = GetTargetHPPercent();
 
             bool in5y = GetTargetDistance() <= 5;
+            var gauge = GetJobGauge<VPRGauge>();
+            var CappedOnCoils =
+                (TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 2) ||
+                (!TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 1);
+            var SwiftskinsCoilReady = gauge.DreadCombo == DreadCombo.SwiftskinsCoil;
+            var HuntersCoilReady = gauge.DreadCombo == DreadCombo.HuntersCoil;
+            var VicewinderReady = gauge.DreadCombo == DreadCombo.Dreadwinder;
+            var trueNorthReady = TargetNeedsPositionals() && ActionReady(All.TrueNorth) && !HasEffect(All.Buffs.TrueNorth);
+            var ireCD = GetCooldownRemainingTime(SerpentsIre);
+            var GCD = GetCooldown(OriginalHook(ReavingFangs)).CooldownTotal;
 
             if (actionID is SteelFangs)
             {
@@ -323,7 +346,7 @@ internal class VPR
                 if (IsEnabled(CustomComboPreset.VPR_ST_RangedUptime) &&
                     LevelChecked(WrithingSnap) && !InMeleeRange() && HasBattleTarget())
                     return IsEnabled(CustomComboPreset.VPR_ST_RangedUptimeUncoiledFury) &&
-                           HasRattlingCoilStack(gauge)
+                           gauge.RattlingCoilStacks > 0
                         ? UncoiledFury
                         : WrithingSnap;
 
@@ -365,7 +388,7 @@ internal class VPR
                 if (IsEnabled(CustomComboPreset.VPR_ST_UncoiledFury) && !VPRHelper.IsComboExpiring(2) &&
                     LevelChecked(UncoiledFury) && HasEffect(Buffs.Swiftscaled) && HasEffect(Buffs.HuntersInstinct) &&
                     (gauge.RattlingCoilStacks > Config.VPR_ST_UncoiledFury_HoldCharges ||
-                     (enemyHP < uncoiledThreshold && HasRattlingCoilStack(gauge))) &&
+                     (enemyHP < uncoiledThreshold && gauge.RattlingCoilStacks > 0)) &&
                     !VicewinderReady && !HuntersCoilReady && !SwiftskinsCoilReady &&
                     !HasEffect(Buffs.Reawakened) && !HasEffect(Buffs.ReadyToReawaken) &&
                     !WasLastWeaponskill(Ouroboros) &&
@@ -497,6 +520,16 @@ internal class VPR
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
             bool in5y = HasBattleTarget() && GetTargetDistance() <= 5;
+            int uncoiledThreshold = Config.VPR_AoE_UncoiledFury_Threshold;
+            var gauge = GetJobGauge<VPRGauge>();
+            var CappedOnCoils =
+                (TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 2) ||
+                (!TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 1);
+            var SwiftskinsDenReady = gauge.DreadCombo == DreadCombo.SwiftskinsDen;
+            var HuntersDenReady = gauge.DreadCombo == DreadCombo.HuntersDen;
+            var VicepitReady = gauge.DreadCombo == DreadCombo.PitOfDread;
+            var ireCD = GetCooldownRemainingTime(SerpentsIre);
+            var GCD = GetCooldown(OriginalHook(ReavingFangs)).CooldownTotal;
 
             if (actionID is SteelMaw)
             {
@@ -576,7 +609,7 @@ internal class VPR
 
                 // Uncoiled Fury usage
                 if (LevelChecked(UncoiledFury) &&
-                    HasRattlingCoilStack(gauge) &&
+                    gauge.RattlingCoilStacks > 0 &&
                     HasEffect(Buffs.Swiftscaled) && HasEffect(Buffs.HuntersInstinct) &&
                     !VicepitReady && !HuntersDenReady && !SwiftskinsDenReady &&
                     !HasEffect(Buffs.Reawakened) && !HasEffect(Buffs.FellskinsVenom) &&
@@ -680,6 +713,15 @@ internal class VPR
         {
             int uncoiledThreshold = Config.VPR_AoE_UncoiledFury_Threshold;
             bool in5y = HasBattleTarget() && GetTargetDistance() <= 5;
+            var gauge = GetJobGauge<VPRGauge>();
+            var CappedOnCoils =
+                (TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 2) ||
+                (!TraitLevelChecked(Traits.EnhancedVipersRattle) && gauge.RattlingCoilStacks > 1);
+            var SwiftskinsDenReady = gauge.DreadCombo == DreadCombo.SwiftskinsDen;
+            var HuntersDenReady = gauge.DreadCombo == DreadCombo.HuntersDen;
+            var VicepitReady = gauge.DreadCombo == DreadCombo.PitOfDread;
+            var ireCD = GetCooldownRemainingTime(SerpentsIre);
+            var GCD = GetCooldown(OriginalHook(ReavingFangs)).CooldownTotal;
 
             if (actionID is SteelMaw)
             {
@@ -782,7 +824,7 @@ internal class VPR
                     LevelChecked(UncoiledFury) &&
                     (gauge.RattlingCoilStacks > Config.VPR_AoE_UncoiledFury_HoldCharges ||
                      (GetTargetHPPercent() < uncoiledThreshold &&
-                      HasRattlingCoilStack(gauge))) &&
+                      gauge.RattlingCoilStacks > 0)) &&
                     HasEffect(Buffs.Swiftscaled) && HasEffect(Buffs.HuntersInstinct) &&
                     !VicepitReady && !HuntersDenReady && !SwiftskinsDenReady &&
                     !HasEffect(Buffs.Reawakened) && !HasEffect(Buffs.FellskinsVenom) &&
@@ -889,6 +931,11 @@ internal class VPR
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var gauge = GetJobGauge<VPRGauge>();
+            var VicewinderReady = gauge.DreadCombo == DreadCombo.Dreadwinder;
+            var HuntersCoilReady = gauge.DreadCombo == DreadCombo.HuntersCoil;
+            var SwiftskinsCoilReady = gauge.DreadCombo == DreadCombo.SwiftskinsCoil;
+
             switch (actionID)
             {
                 case Vicewinder:
@@ -928,6 +975,11 @@ internal class VPR
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            VPRGauge gauge = GetJobGauge<VPRGauge>();
+            bool SwiftskinsDenReady = gauge.DreadCombo == DreadCombo.SwiftskinsDen;
+            bool HuntersDenReady = gauge.DreadCombo == DreadCombo.HuntersDen;
+            bool VicepitReady = gauge.DreadCombo == DreadCombo.PitOfDread;
+
             switch (actionID)
             {
                 case Vicepit:
@@ -982,6 +1034,7 @@ internal class VPR
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
             int buttonChoice = Config.VPR_ReawakenLegacyButton;
+            var gauge = GetJobGauge<VPRGauge>();
 
             switch (buttonChoice)
             {

@@ -1,5 +1,7 @@
 using Dalamud.Game.ClientState.JobGauge.Types;
 using ECommons.DalamudServices;
+using System;
+using System.Linq;
 using XIVSlothCombo.Combos.PvE.Content;
 using XIVSlothCombo.CustomComboNS;
 using XIVSlothCombo.CustomComboNS.Functions;
@@ -38,6 +40,20 @@ internal class MCH
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var Gauge = GetJobGauge<MCHGauge>();
+            float GCD = GetCooldown(OriginalHook(SplitShot)).CooldownTotal;
+            float heatblastRC = GetCooldown(Heatblast).CooldownTotal;
+            var interruptReady = ActionReady(All.HeadGraze) && CanInterruptEnemy() && CanDelayedWeave(ActionWatching.LastWeaponskill);
+            bool drillCD = !LevelChecked(Drill) || (!TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
+                                                                  GetCooldownRemainingTime(Drill) > heatblastRC * 6) ||
+                                         (TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
+                                          GetRemainingCharges(Drill) < GetMaxCharges(Drill) &&
+                                          GetCooldownRemainingTime(Drill) > heatblastRC * 6);
+
+            bool anchorCD = !LevelChecked(AirAnchor) || (LevelChecked(AirAnchor) && GetCooldownRemainingTime(AirAnchor) > heatblastRC * 6);
+            bool sawCD = !LevelChecked(Chainsaw) || (LevelChecked(Chainsaw) && GetCooldownRemainingTime(Chainsaw) > heatblastRC * 6);
+            int BSUsed = ActionWatching.CombatActions.Count(x => x == BarrelStabilizer);
+
             if (actionID is SplitShot or HeatedSplitShot)
             {
                 if (IsEnabled(CustomComboPreset.MCH_Variant_Cure) &&
@@ -77,7 +93,7 @@ internal class MCH
                     {
                         // Ensures Hypercharge is double weaved with WF
                         if ((LevelChecked(FullMetalField) && JustUsed(FullMetalField) &&
-                             (GetCooldownRemainingTime(Wildfire) < 1.5 || ActionReady(Wildfire))) ||
+                             (GetCooldownRemainingTime(Wildfire) < GCD || ActionReady(Wildfire))) ||
                             (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
                             !LevelChecked(Wildfire))
                             return Hypercharge;
@@ -244,6 +260,20 @@ internal class MCH
                 (!HasEffect(Buffs.Reassembled) && GetRemainingCharges(Reassemble) <= Config.MCH_ST_ReassemblePool) ||
                 !IsEnabled(CustomComboPreset.MCH_ST_Adv_Reassemble);
 
+            var Gauge = GetJobGauge<MCHGauge>();
+            float GCD = GetCooldown(OriginalHook(SplitShot)).CooldownTotal;
+            float heatblastRC = GetCooldown(Heatblast).CooldownTotal;
+            var interruptReady = ActionReady(All.HeadGraze) && CanInterruptEnemy() && CanDelayedWeave(ActionWatching.LastWeaponskill);
+            bool drillCD = !LevelChecked(Drill) || (!TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
+                                                                  GetCooldownRemainingTime(Drill) > heatblastRC * 6) ||
+                                         (TraitLevelChecked(Traits.EnhancedMultiWeapon) &&
+                                          GetRemainingCharges(Drill) < GetMaxCharges(Drill) &&
+                                          GetCooldownRemainingTime(Drill) > heatblastRC * 6);
+
+            bool anchorCD = !LevelChecked(AirAnchor) || (LevelChecked(AirAnchor) && GetCooldownRemainingTime(AirAnchor) > heatblastRC * 6);
+            bool sawCD = !LevelChecked(Chainsaw) || (LevelChecked(Chainsaw) && GetCooldownRemainingTime(Chainsaw) > heatblastRC * 6);
+            int BSUsed = ActionWatching.CombatActions.Count(x => x == BarrelStabilizer);
+
             if (actionID is SplitShot or HeatedSplitShot)
             {
                 if (IsEnabled(CustomComboPreset.MCH_Variant_Cure) &&
@@ -294,7 +324,7 @@ internal class MCH
                     {
                         // Ensures Hypercharge is double weaved with WF
                         if ((LevelChecked(FullMetalField) && JustUsed(FullMetalField) &&
-                             (GetCooldownRemainingTime(Wildfire) < GCD || ActionReady(Wildfire))) ||
+                             (GetCooldownRemainingTime(Wildfire) < 1.5 || ActionReady(Wildfire))) ||
                             (!LevelChecked(FullMetalField) && ActionReady(Wildfire)) ||
                             !LevelChecked(Wildfire))
                             return Hypercharge;
@@ -497,6 +527,9 @@ internal class MCH
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var Gauge = GetJobGauge<MCHGauge>();
+            float GCD = GetCooldown(OriginalHook(SplitShot)).CooldownTotal;
+
             if (actionID is SpreadShot or Scattergun)
             {
                 if (IsEnabled(CustomComboPreset.MCH_Variant_Cure) &&
@@ -584,6 +617,9 @@ internal class MCH
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var Gauge = GetJobGauge<MCHGauge>();
+            float GCD = GetCooldown(OriginalHook(SplitShot)).CooldownTotal;
+
             bool reassembledScattergun = IsEnabled(CustomComboPreset.MCH_AoE_Adv_Reassemble) &&
                                          Config.MCH_AoE_Reassembled[0] && HasEffect(Buffs.Reassembled);
 
@@ -729,6 +765,8 @@ internal class MCH
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var Gauge = GetJobGauge<MCHGauge>();
+
             if (actionID is Heatblast or BlazingShot)
             {
                 if (IsEnabled(CustomComboPreset.MCH_Heatblast_AutoBarrel) &&
@@ -772,6 +810,8 @@ internal class MCH
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var Gauge = GetJobGauge<MCHGauge>();
+
             if (actionID is AutoCrossbow)
             {
                 if (IsEnabled(CustomComboPreset.MCH_AutoCrossbow_AutoBarrel) &&
@@ -831,6 +871,8 @@ internal class MCH
 
         protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
         {
+            var Gauge = GetJobGauge<MCHGauge>();
+
             if (actionID is RookAutoturret or AutomatonQueen && Gauge.IsRobotActive)
                 return OriginalHook(QueenOverdrive);
 
